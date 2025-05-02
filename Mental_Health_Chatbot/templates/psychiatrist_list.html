@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Psychiatrists Near You{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-10">
+  <h2 class="text-3xl font-bold text-center mb-8">🧠 Psychiatrists Near "{{ user_location }}"</h2>
+
+  {% if psychiatrists %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for p in psychiatrists %}
+        <div class="bg-white rounded-lg shadow p-5">
+          {% comment %} {% if p.image %}
+            <img src="{{ p.image.url }}" class="h-40 w-full object-cover rounded mb-4" alt="{{ p.name }}">
+          {% else %}
+            <img src="{% static 'images/default-doctor.png' %}" class="h-40 w-full object-cover rounded mb-4" alt="Default image">
+          {% endif %} {% endcomment %}
+          <h3 class="text-xl font-semibold">{{ p.name }}</h3>
+          <p class="text-gray-600">{{ p.specialization }}</p>
+          <p class="text-sm text-gray-500">📍 {{ p.location }}</p>
+          <p class="text-sm text-yellow-500">⭐ Rating: {{ p.rating }}</p>
+          <p class="text-sm text-green-600">💰 Fees: ₹{{ p.fees }}</p>
+          <p class="text-sm text-blue-600">📞 {{ p.contact }}</p>
+          {% if p.available %}
+            <p class="text-sm text-green-500 mt-2">✅ Available Now</p>
+          {% else %}
+            <p class="text-sm text-red-500 mt-2">⛔ Not Available</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-gray-600">No psychiatrists found in this area.</p>
+  {% endif %}
+</div>
+{% endblock %}

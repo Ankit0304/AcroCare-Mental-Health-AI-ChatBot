@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold mb-8 text-center">Latest Blogs</h1>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {% for blog in blogs %}
+        <div class="bg-white rounded-lg shadow hover:shadow-xl transition duration-300">
+            {% if blog.image_name %}
+            <img src="{% static 'blog/images/' %}{{ blog.image_name }}" alt="{{ blog.title }}" class="w-full h-48 object-cover rounded-t-lg" />
+            {% endif %}
+            <div class="p-4">
+                <h2 class="text-lg font-semibold mb-2">{{ blog.title }}</h2>
+                <p class="text-gray-600 text-sm mb-4">{{ blog.summary|truncatewords:20 }}</p>
+                <a href="{{ blog.link }}" target="_blank"
+                   class="text-indigo-600 hover:underline font-medium text-sm">
+                    Read more →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

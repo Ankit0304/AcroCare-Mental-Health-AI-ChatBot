@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-3xl font-bold mb-6 text-center">📰 Latest Mental Health News</h1>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for article in external_articles %}
+    <div class="bg-white p-4 rounded shadow">
+        <h2 class="text-xl font-semibold">{{ article.title }}</h2>
+        <p class="text-sm text-gray-600 mb-2">{{ article.published }}</p>
+        <p class="text-gray-700 text-sm">{{ article.summary|safe }}</p>
+        <a href="{% url 'blog_redirect' %}?link={{ article.link|urlencode }}&title={{ article.title|urlencode }}" target="_blank">Read More</a>
+
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

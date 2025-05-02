@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Welcome to Your AI Therapist{% endblock %}
+
+{% block content %}
+<!-- Page Wrapper -->
+<div class="relative min-h-screen flex flex-col justify-between overflow-hidden">
+  <!-- Foreground Content -->
+  <div class="relative z-10">
+    <!-- 👋 Hero Section -->
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="flex flex-col md:flex-row items-center justify-between px-8 md:px-24 py-24 w-full bg-white bg-opacity-80 backdrop-blur-md rounded-3xl shadow-2xl">
+          <!-- Text Content -->
+          <div class="max-w-xl text-center md:text-left space-y-6">
+            <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight">
+              Your Personal <span class="text-blue-600">AI Mental Health</span> Companion
+            </h1>
+            <p class="text-lg text-gray-700">
+              Talk to an AI that listens. No judgment. Available 24/7 to support your emotional well-being and self-growth.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+              <a href="{% url 'therapy' %}" class="px-8 py-3 bg-blue-600 text-white font-semibold text-lg rounded-xl shadow hover:bg-blue-700 transition duration-300">
+                💬 Chat with Buddy
+              </a>
+            </div>
+          </div>
+  
+          <!-- Illustration -->
+          <div class="w-full md:w-1/2 mt-10 md:mt-0 flex justify-center">
+            <img src="{% static 'images/chat_bud.png' %}" alt="Chatbot illustration" class="w-64 md:w-96 rounded-xl shadow-lg">
+          </div>
+        </div>
+    </div>
+
+    <!-- 🌟 Features Section -->
+    <section class="bg-gray-50 bg-opacity-90 py-20 px-6 md:px-20">
+      <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">🌿 What We Offer</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-center">
+        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold mb-2">💬 Chat with AI Buddy</h3>
+          <p class="text-gray-600">A caring companion to talk to anytime. Feel heard and supported without judgment.</p>
+        </div>
+        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold mb-2">🧘 Guided Meditation</h3>
+          <p class="text-gray-600">Relax and center yourself with our calming, AI-curated meditation sessions.</p>
+        </div>
+        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold mb-2">🌬️ Breathing Exercises</h3>
+          <p class="text-gray-600">Manage stress with visual and interactive breathing routines tailored for you.</p>
+        </div>
+        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold mb-2">📝 Mood-Based Recommendations</h3>
+          <p class="text-gray-600">Receive personalized tips based on your current emotions and chat insights.</p>
+        </div>
+        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold mb-2">📓 Journaling & Emotion Tracking</h3>
+          <p class="text-gray-600">Log your thoughts and visualize mood trends over time.</p>
+        </div>
+        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
+          <h3 class="text-xl font-semibold mb-2">🧠 Quick Mental Health Assessments</h3>
+          <p class="text-gray-600">Gauge your mental state through quick and simple check-ins.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 💖 User Reviews Section -->
+    <section class="py-20 px-6 md:px-20 bg-white bg-opacity-95">
+      <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">💖 What Users Say</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+        <div class="bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+          <p class="italic text-gray-700">"This chatbot really helped me during a tough night. It felt like someone truly cared."</p>
+          <p class="mt-4 font-semibold text-blue-700">– Aanya, Student</p>
+        </div>
+        <div class="bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+          <p class="italic text-gray-700">"The meditation and breathing exercises are super calming. I use them daily!"</p>
+          <p class="mt-4 font-semibold text-blue-700">– Raj, Software Engineer</p>
+        </div>
+        <div class="bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition">
+          <p class="italic text-gray-700">"I love how it tracks my mood and gives helpful suggestions. Feels like a real companion."</p>
+          <p class="mt-4 font-semibold text-blue-700">– Priya, Freelancer</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ❓ FAQ Section -->
+    <section class="bg-gray-100 py-20 px-6 md:px-20">
+      <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">❓ Frequently Asked Questions</h2>
+      <div class="max-w-3xl mx-auto space-y-8">
+        <div class="bg-white p-6 rounded-2xl shadow-md">
+          <h3 class="font-semibold text-xl">Is this a real therapist?</h3>
+          <p class="text-gray-700 mt-2">No, this is an AI-based support system designed to provide emotional support and self-care tools. It does not replace professional therapy.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md">
+          <h3 class="font-semibold text-xl">Is my data private?</h3>
+          <p class="text-gray-700 mt-2">Absolutely. Your data is securely stored and never shared. We respect your privacy and confidentiality.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md">
+          <h3 class="font-semibold text-xl">Can I access this anytime?</h3>
+          <p class="text-gray-700 mt-2">Yes, our AI buddy is available 24/7. No appointments needed—just visit and start chatting.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md">
+          <h3 class="font-semibold text-xl">Is this free to use?</h3>
+          <p class="text-gray-700 mt-2">Yes, the core features are completely free to use for everyone.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

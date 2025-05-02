@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}ACROCARE-AI ChatBot{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 text-sm">
+
+  <!-- Navbar -->
+  {% if request.resolver_match.url_name != "login" and request.resolver_match.url_name != "signup" and request.resolver_match.url_name != "password_reset" and request.resolver_match.url_name != "password_reset_done" and request.resolver_match.url_name != "password_reset_confirm" and request.resolver_match.url_name != "password_reset_complete" %}
+  <nav class="sticky top-0 z-50 bg-blue-600 text-white py-2 px-4 shadow">
+    <div class="container mx-auto flex justify-between items-center text-sm">
+      <a href="{% url 'dashboard' %}" class="text-lg font-semibold tracking-tight">ACROCARE</a>
+
+      <div class="flex items-center space-x-3">
+        <a href="/blogs/" class="hover:underline">Blogs</a>
+        <a href="{% url 'therapy' %}" class="hover:underline">Chat-Buddy</a>
+        <a href="{% url 'psychiatrist_list' %}" class="hover:underline">Psychiatrists</a>
+        <a href="{% url 'journal_page' %}" class="hover:underline">Journal</a>
+        
+
+        {% if user.is_authenticated %}
+        <div class="relative">
+          <button id="userMenuButton" class="focus:outline-none">
+            {% if user.profile.profile_picture %}
+              <img src="{{ user.profile.profile_picture.url }}" alt="Avatar" class="w-7 h-7 rounded-full object-cover border-2 border-white" />
+            {% else %}
+              <div class="w-7 h-7 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold text-xs border-2 border-white">
+                {{ user.first_name|default:user.username|first|upper }}
+              </div>
+            {% endif %}
+          </button>
+
+          <!-- Dropdown -->
+          <div id="userDropdown" class="hidden absolute right-0 mt-1 w-40 bg-white text-black rounded-md shadow z-50">
+            <a href="{% url 'profile' %}" class="block px-3 py-2 text-xs hover:bg-gray-100">Profile</a>
+            <a href="{% url 'password_change' %}" class="block px-3 py-2 text-xs hover:bg-gray-100">Change Password</a>
+            <button id="themeToggle" class="w-full text-left px-3 py-2 text-xs hover:bg-gray-100">Toggle Theme 🌗</button>
+            <form method="POST" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="w-full text-left px-3 py-2 text-xs text-red-600 hover:bg-gray-100">Logout</button>
+            </form>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+  {% endif %}
+
+  <!-- Main Content -->
+  <main class="my-2 px-2 sm:px-4">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white text-center py-2 text-xs">
+    <p>&copy; 2025 Mental Health Chatbot. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    tailwind.config = {
+        darkMode: 'class',
+    }
+    const userMenuBtn = document.getElementById('userMenuButton');
+    const dropdown = document.getElementById('userDropdown');
+
+    userMenuBtn?.addEventListener('click', () => {
+      dropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!userMenuBtn?.contains(e.target) && !dropdown?.contains(e.target)) {
+        dropdown?.classList.add('hidden');
+      }
+    });
+
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle?.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      const current = localStorage.getItem('theme');
+      localStorage.setItem('theme', current === 'dark' ? 'light' : 'dark');
+    });
+  </script>
+</body>
+</html>

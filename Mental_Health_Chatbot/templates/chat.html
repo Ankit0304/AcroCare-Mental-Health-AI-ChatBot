@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Chat with Buddy{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-blue-100 to-white flex justify-center items-start py-10 px-4">
+    <div class="w-full max-w-2xl bg-white shadow-2xl rounded-3xl p-6 space-y-6 border border-blue-200">
+        <!-- Header -->
+        <div class="text-center">
+            <h2 class="text-4xl font-extrabold text-blue-700 drop-shadow">💬 ChatBuddy</h2>
+            <p class="text-gray-500 mt-2 text-lg">I'm here for you. Let's talk 💙</p>
+        </div>
+
+        <!-- Chat messages -->
+        <div id="chat-box" class="h-96 overflow-y-auto bg-blue-50 border border-blue-200 rounded-2xl p-4 flex flex-col space-y-2 scroll-smooth shadow-inner">
+            {% for chat in chat_history %}
+                <div class="p-3 rounded-2xl text-left bg-blue-600 text-white self-end ml-auto max-w-sm break-words animate-fade-in">
+                    {{ chat.message }}
+                </div>
+                <div class="p-3 rounded-2xl bg-white text-gray-800 self-start mr-auto max-w-sm shadow-sm break-words animate-fade-in">
+                    {{ chat.response }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Chat Input Form -->
+        <form id="chat-form" class="flex items-center gap-2">
+            <input id="chat-input" type="text" placeholder="Tell me how you're feeling..." required
+                class="flex-1 px-5 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 bg-white shadow transition duration-150 ease-in-out" />
+            
+            <button type="button" id="mic-btn"
+                class="px-4 py-3 bg-blue-100 hover:bg-blue-200 text-xl rounded-full transition duration-150 ease-in-out shadow">
+                🎤
+            </button>
+            <button type="submit"
+                class="px-6 py-3 bg-blue-600 text-white font-bold rounded-full shadow hover:bg-blue-700 transition duration-150 ease-in-out">
+                ➤
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Animations -->
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 0.4s ease-in-out both;
+    }
+</style>
+
+<!-- Chat Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const chatForm = document.getElementById("chat-form");
+        const chatInput = document.getElementById("chat-input");
+        const chatMessages = document.getElementById("chat-box");
+
+        chatForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const userMessage = chatInput.value.trim();
+            if (!userMessage) return;
+
+            appendMessage("user", userMessage);
+            chatInput.value = "";
+
+            const botTyping = appendMessage("bot", "💭 ChatBuddy is thinking...", true);
+
+            try {
+                const response = await fetch("{% url 'chatbot_response' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ message: userMessage }),
+                });
+
+                if (!response.ok) {
+                    botTyping.innerText = "⚠ Oops, something went wrong!";
+                    return;
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let botMessage = "";
+                let lastChar = "";
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true }).replace(/\n/g, " ");
+                    if (lastChar !== " " && botMessage.length > 0 && chunk[0] !== " ") {
+                        botMessage += " ";
+                    }
+
+                    botMessage += chunk;
+                    lastChar = chunk[chunk.length - 1];
+
+                    botTyping.innerText = botMessage;
+                }
+
+                botTyping.innerText = botMessage;
+            } catch (error) {
+                botTyping.innerText = `⚠ Error: ${error.message}`;
+            }
+        });
+
+        function appendMessage(sender, message, isTyping = false) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("p-3", "rounded-2xl", "max-w-sm", "break-words", "shadow-sm", "my-1", "animate-fade-in");
+
+            if (sender === "user") {
+                messageElement.classList.add("bg-blue-600", "text-white", "self-end", "ml-auto");
+            } else {
+                messageElement.classList.add("bg-white", "text-gray-800", "self-start", "mr-auto");
+            }
+
+            messageElement.innerText = message;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            return isTyping ? messageElement : null;
+        }
+
+        // Voice Input
+        const micBtn = document.getElementById("mic-btn");
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            micBtn.addEventListener("click", () => {
+                recognition.start();
+                micBtn.textContent = "🎙 Listening...";
+            });
+
+            recognition.onresult = function (event) {
+                const transcript = event.results[0][0].transcript;
+                chatInput.value = transcript;
+                micBtn.textContent = "🎤";
+            };
+
+            recognition.onerror = function (event) {
+                console.error("Speech recognition error:", event.error);
+                micBtn.textContent = "🎤";
+            };
+
+            recognition.onend = function () {
+                micBtn.textContent = "🎤";
+            };
+        } else {
+            micBtn.disabled = true;
+            micBtn.title = "Speech recognition not supported";
+        }
+    });
+</script>
+{% endblock %}

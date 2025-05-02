@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+<!-- Profile Page -->
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="max-w-lg w-full bg-white shadow-lg rounded-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-900 text-center mb-4">🧑‍💻 Your Profile</h2>
+
+        <div class="flex flex-col items-center">
+            <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-blue-500">
+                {% if user.profile.profile_picture %}
+                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="w-full h-full object-cover">
+                {% else %}
+                    <img src="{% static 'images/account.png' %}" alt="Default Profile" class="w-full h-full object-cover">
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col items-center">
+                <p class="text-lg font-medium text-gray-900 mt-3">{{ user.username }}</p>
+                <p class="text-gray-600">{{ user.email }}</p>
+            </div>
+
+            <!-- Profile Update Form -->
+            <form id="profileForm" method="POST" enctype="multipart/form-data" class="mt-6 space-y-4">
+                {% csrf_token %}
+
+                <!-- Hidden File Input -->
+                <input type="file" id="profilePictureInput" name="profile_picture" accept="image/*" class="hidden">
+
+                <!-- Trigger Button -->
+                <button type="button"
+                    onclick="document.getElementById('profilePictureInput').click();"
+                    class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    Change Profile Picture
+                </button>
+
+                <!-- Modal for cropping -->
+                {% comment %} <div id="cropperModal"
+                    class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
+                    <div class="bg-white p-4 rounded-lg max-w-lg w-full">
+                        <h2 class="text-lg font-bold mb-2">Crop your photo</h2>
+                        <div>
+                            <img id="imagePreview" class="max-h-96 w-full object-contain" />
+                        </div>
+                        <div class="mt-4 flex justify-end space-x-3">
+                            <button type="button" onclick="closeCropper()" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+                            <button type="button" onclick="cropImage()" class="px-4 py-2 bg-blue-600 text-white rounded">Crop & Save</button>
+                        </div>
+                    </div>
+                </div> {% endcomment %}
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" name="username" value="{{ user.username }}"
+                        class="mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        readonly>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" name="email" value="{{ user.email }}"
+                        class="mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        readonly>
+                </div>
+
+                {% comment %} <div>
+                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" name="password" placeholder="New Password"
+                        class="mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div> {% endcomment %}
+
+                <div>
+                    <button type="submit"
+                        class="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700">
+                        Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- CropperJS CDN -->
+<link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet" />
+<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+
+<script>
+    let cropper;
+    const input = document.getElementById('profilePictureInput');
+    const modal = document.getElementById('cropperModal');
+    const preview = document.getElementById('imagePreview');
+
+    // Wait for the image to fully load before initializing cropper
+    function waitForImageToLoad(img) {
+        return new Promise((resolve) => {
+            img.onload = () => {
+                // Small delay to allow image rendering
+                setTimeout(() => resolve(), 100);
+            };
+            img.onerror = () => alert("Failed to load image.");
+        });
+    }
+
+    input.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                preview.onload = function () {
+                    // Initialize cropper only after image is loaded
+                    if (cropper) cropper.destroy();
+                    cropper = new Cropper(preview, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1
+                    });
+                    modal.classList.remove('hidden');
+                };
+                preview.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    function closeCropper() {
+        modal.classList.add('hidden');
+        
+        // Destroy cropper and reset image
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    
+        // Clear the preview src to remove residual CropperJS styles
+        preview.src = '';
+        input.value = '';
+    }
+    
+
+    function cropImage() {
+        console.log("Crop button clicked!");
+    
+        if (!cropper) {
+            alert("Please wait for the image to load fully before cropping.");
+            return;
+        }
+    
+        const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300,
+        });
+    
+        canvas.toBlob(blob => {
+            if (!blob) {
+                alert("Crop failed. Try again.");
+                return;
+            }
+    
+            const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
+    
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            input.files = dataTransfer.files;
+    
+            closeCropper();
+            document.getElementById('profileForm').submit();
+        }, 'image/jpeg');
+    }
+</script>    
+    
+{% endblock %}

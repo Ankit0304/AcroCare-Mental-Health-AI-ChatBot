@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Therapy{% endblock %}
+
+{% block content %}
+<style>
+  .therapy-bg {
+    background-image: url("{% static 'images/therapy-bg.jpeg' %}");
+    background-size: cover;
+    background-position: center;
+  }
+</style>
+
+<div class="min-h-screen therapy-bg relative">
+  <div class="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
+
+  <div class="relative z-10 p-6 md:p-12 max-w-7xl mx-auto">
+
+    <!-- Chat With Buddy Box -->
+    <div class="max-w-md mx-auto bg-white/80 backdrop-blur-md rounded-xl shadow-xl p-6 text-center mb-10">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">How can I help?<br>What happened today?</h2>
+      <img src="{% static 'images/chat_bud.png' %}" alt="Chat Panda" class="w-24 h-24 mx-auto mb-4" />
+      <a href="{% url 'chat' %}">
+        <button class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-300">
+          Chat With Buddy
+        </button>
+      </a>
+    </div>
+
+    {% comment %} <!-- Section Title -->
+    <h1 class="text-3xl md:text-4xl font-bold text-white text-center mb-10">🧠 Explore Your Therapy Hub</h1>
+
+    <!-- Therapy Options Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-12">
+      <div onclick="showSection('meditation')" class="cursor-pointer bg-green-200 hover:bg-green-300 p-6 rounded-xl shadow-md text-center transition">
+        <h2 class="text-lg font-semibold text-green-900">🧘 Guided Meditation</h2>
+      </div>
+      <div onclick="showSection('breathing')" class="cursor-pointer bg-blue-200 hover:bg-blue-300 p-6 rounded-xl shadow-md text-center transition">
+        <h2 class="text-lg font-semibold text-blue-900">🌬️ Breathing Exercise</h2>
+      </div>
+      <div onclick="showSection('assessment')" class="cursor-pointer bg-yellow-200 hover:bg-yellow-300 p-6 rounded-xl shadow-md text-center transition">
+        <h2 class="text-lg font-semibold text-yellow-900">📝 Quick Assessment</h2>
+      </div>
+    </div> {% endcomment %}
+
+    <!-- Divider -->
+    <div class="my-12 text-center">
+      <h2 class="text-3xl font-bold text-white">🧘‍♀️ Self-Care Space</h2>
+      <p class="text-white/80 mt-2">Gentle, mindful tools to support your mental health.</p>
+    </div>
+
+    <!-- Therapy Tools Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+      <div onclick="showSection('affirmations')" class="cursor-pointer bg-rose-100 hover:bg-rose-200 p-6 rounded-xl shadow text-center">
+        <h2 class="text-lg font-semibold text-rose-900">🌞 Daily Affirmation</h2>
+      </div>
+      <div onclick="showSection('moodtracker')" class="cursor-pointer bg-indigo-100 hover:bg-indigo-200 p-6 rounded-xl shadow text-center">
+        <h2 class="text-lg font-semibold text-indigo-900">😊 Mood Tracker</h2>
+      </div>
+      <div onclick="showSection('visualization')" class="cursor-pointer bg-teal-100 hover:bg-teal-200 p-6 rounded-xl shadow text-center">
+        <h2 class="text-lg font-semibold text-teal-900">🌅 Visualization</h2>
+      </div>
+      <div onclick="showSection('soundboard')" class="cursor-pointer bg-yellow-100 hover:bg-yellow-200 p-6 rounded-xl shadow text-center">
+        <h2 class="text-lg font-semibold text-yellow-900">🎵 Calm Sounds</h2>
+      </div>
+    </div>
+
+    <!-- Activity Sections -->
+    <div id="activitySections" class="space-y-10">
+
+      <!-- Meditation -->
+      <div id="meditation" class="hidden bg-white/90 backdrop-blur-md rounded-xl shadow-md p-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800">🎧 Guided Meditation</h2>
+        {% for meditation in meditations %}
+        <div class="mb-4">
+          <p class="font-medium text-gray-700">{{ meditation.title }} ({{ meditation.duration }} mins)</p>
+          <audio controls src="{{ meditation.audio_url }}" class="w-full mt-2"></audio>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Breathing -->
+      <div id="breathing" class="hidden bg-white/90 backdrop-blur-md rounded-xl shadow-md p-6 text-center">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800">🌬️ Breathing Exercise</h2>
+        <div class="flex flex-col items-center">
+          <div id="breathCircle" class="w-32 h-32 bg-blue-300 rounded-full mb-4 transition-all duration-[4000ms]"></div>
+          <button onclick="startBreathing()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Start Breathing</button>
+        </div>
+      </div>
+
+      <!-- Assessment -->
+      <div id="assessment" class="hidden bg-white/90 backdrop-blur-md rounded-xl shadow-md p-6">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-800">📝 Quick Mental Health Assessment</h2>
+        <form method="POST">
+          {% csrf_token %}
+          <!-- (Assessment questions go here...) -->
+          <!-- (Omitted for brevity, same as your provided code) -->
+          <button type="submit" class="mt-6 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg">
+            Submit Assessment
+          </button>
+        </form>
+      </div>
+
+      <!-- Affirmations -->
+      <div id="affirmations" class="hidden bg-white/90 rounded-xl shadow-md p-6 text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🌞 Your Daily Affirmation</h2>
+        <p id="affirmationText" class="text-xl italic text-purple-800">"You are enough. You have always been enough."</p>
+        <button onclick="newAffirmation()" class="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">New Affirmation</button>
+      </div>
+
+      <!-- Mood Tracker -->
+      <div id="moodtracker" class="hidden bg-white/90 rounded-xl shadow-md p-6 text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">😊 How are you feeling right now?</h2>
+        <div class="text-3xl space-x-4">
+          <span onclick="trackMood('😊')" class="cursor-pointer">😊</span>
+          <span onclick="trackMood('😐')" class="cursor-pointer">😐</span>
+          <span onclick="trackMood('😢')" class="cursor-pointer">😢</span>
+          <span onclick="trackMood('😠')" class="cursor-pointer">😠</span>
+        </div>
+        <p id="moodResponse" class="mt-4 text-green-700"></p>
+      </div>
+
+      <!-- Visualization -->
+      <div id="visualization" class="hidden bg-white/90 rounded-xl shadow-md p-6 text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🌅 Visual Relaxation</h2>
+        <p class="mb-2 text-gray-700">Breathe deeply and watch the calming animation.</p>
+        <div class="w-24 h-24 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full animate-pulse mx-auto"></div>
+      </div>
+
+      <!-- Soundboard -->
+      <div id="soundboard" class="hidden bg-white/90 rounded-xl shadow-md p-6 text-center">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">🎵 Choose a Soothing Sound</h2>
+        <div class="flex justify-center flex-wrap gap-4">
+          <button onclick="playSound('rain')" class="bg-blue-100 px-4 py-2 rounded-lg hover:bg-blue-200">🌧 Rain</button>
+          <button onclick="playSound('waves')" class="bg-teal-100 px-4 py-2 rounded-lg hover:bg-teal-200">🌊 Ocean Waves</button>
+          <button onclick="playSound('forest')" class="bg-green-100 px-4 py-2 rounded-lg hover:bg-green-200">🌲 Forest</button>
+          <button onclick="stopSound()" class="bg-red-100 px-4 py-2 rounded-lg hover:bg-red-200">⏹ Stop</button>
+        </div>
+        <audio id="soundPlayer" class="mt-4 w-full" controls hidden></audio>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  function showSection(sectionId) {
+    document.querySelectorAll('#activitySections > div').forEach(div => div.classList.add('hidden'));
+    document.getElementById(sectionId).classList.remove('hidden');
+  }
+
+  // Affirmations
+  const affirmations = [
+    "You are capable of amazing things.",
+    "Your feelings are valid.",
+    "This too shall pass.",
+    "You’ve overcome challenges before. You will again.",
+    "You are worthy of love and care."
+  ];
+  function newAffirmation() {
+    const randomAffirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
+    document.getElementById('affirmationText').textContent = `"${randomAffirmation}"`;
+  }
+
+  // Mood Tracker
+  function trackMood(mood) {
+    document.getElementById('moodResponse').textContent = `Thanks for sharing. You marked: ${mood}`;
+  }
+
+  // Soundboard
+  function playSound(type) {
+    const player = document.getElementById('soundPlayer');
+    const sources = {
+      rain: "{% static 'sounds/rain.mp3' %}",
+      waves: "{% static 'sounds/waves.mp3' %}",
+      forest: "{% static 'sounds/forest.mp3' %}"
+    };
+    player.src = sources[type];
+    player.hidden = false;
+    player.play();
+  }
+  function stopSound() {
+    const player = document.getElementById('soundPlayer');
+    player.pause();
+    player.currentTime = 0;
+    player.hidden = true;
+  }
+
+  // Breathing Animation
+  function startBreathing() {
+    const circle = document.getElementById('breathCircle');
+    circle.classList.remove("animate-bounce");
+    circle.classList.add("scale-150");
+    setTimeout(() => {
+      circle.classList.remove("scale-150");
+    }, 4000);
+  }
+</script>
+{% endblock %}
