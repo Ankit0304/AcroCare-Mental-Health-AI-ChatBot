@@ -104,7 +104,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 import json
 # gemini api key
-genai.configure(api_key="AIzaSyBF3BK_9LnRwS6bccpUf03BwuHF9_r35G4")
+genai.configure(api_key="Use Your API key!!..")
 
 
 @login_required
