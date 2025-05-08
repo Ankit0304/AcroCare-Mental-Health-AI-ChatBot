@@ -53,9 +53,9 @@ ACROCARE is a full-stack Django-based mental health support platform with an AI-
 
 - AI Integration: Google Gemini Pro API for chatbot
 
-Voice: Web Speech API
+- Voice: Web Speech API
 
-📁 Project Structure
+## 📁 Project Structure
 acrocare/
 │
 ├── chatbot/             # Main app: chat logic, views, models
@@ -68,3 +68,12 @@ acrocare/
 ├── media/               # Uploaded profile pictures
 ├── acrocare/            # Project settings and URLs
 └── manage.py
+
+## 💡 Future Improvements
+- 🔍 Psychiatrist search by location and rating
+
+- 📈 Mood analytics dashboard
+
+- 📆 Daily check-ins and reminders
+
+- 📲 PWA support for mobile app experience
