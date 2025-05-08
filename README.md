@@ -55,20 +55,6 @@ ACROCARE is a full-stack Django-based mental health support platform with an AI-
 
 - Voice: Web Speech API
 
-## 📁 Project Structure
-acrocare/
-│
-├── chatbot/             # Main app: chat logic, views, models
-├── journal/             # Journaling app
-├── therapy/             # Therapy sessions & exercises
-├── blog/                # Blog system
-├── accounts/            # Auth, profile, user management
-├── templates/           # All HTML templates
-├── static/              # CSS, JS, images
-├── media/               # Uploaded profile pictures
-├── acrocare/            # Project settings and URLs
-└── manage.py
-
 ## 💡 Future Improvements
 - 🔍 Psychiatrist search by location and rating
 
