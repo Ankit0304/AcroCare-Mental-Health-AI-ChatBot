@@ -1,4 +1,4 @@
-#🧠 ACROCARE: Mental Health AI Chatbot 
+# 🧠 ACROCARE: Mental Health AI Chatbot 
 ACROCARE is a full-stack Django-based mental health support platform with an AI-powered chatbot (ChatBuddy), journaling system, therapy exercises, blog recommendations, mood tracking, and voice interaction.
 
 🚀 Features
