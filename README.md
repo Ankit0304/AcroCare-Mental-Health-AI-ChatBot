@@ -1,64 +1,61 @@
 # 🧠 ACROCARE: Mental Health AI Chatbot 
 ACROCARE is a full-stack Django-based mental health support platform with an AI-powered chatbot (ChatBuddy), journaling system, therapy exercises, blog recommendations, mood tracking, and voice interaction.
 
-🚀 Features
-💬 ChatBuddy – AI chatbot using Google Gemini API with:
+## 🚀 Features
+- 💬 ChatBuddy – AI chatbot using Google Gemini API with:
 
-Streaming responses
+  - Streaming responses
+ 
+  - Mood detection
 
-Mood detection
+  - Personalized emotional support
 
-Personalized emotional support
+  - Voice input (Speech-to-Text)
 
-Voice input (Speech-to-Text)
+  - Voice output (Text-to-Speech)
 
-Voice output (Text-to-Speech)
+- 📝 Journal – Users can log their thoughts with:
 
-📝 Journal – Users can log their thoughts with:
+  - Emotion tracking
 
-Emotion tracking
+  - Mood analytics from past entries
 
-Mood analytics from past entries
+- 🧘 Therapy Sessions – Mental wellness tools including:
 
-🧘 Therapy Sessions – Mental wellness tools including:
+  - Guided meditations
 
-Guided meditations
+  - Breathing exercises
 
-Breathing exercises
+  - Assessments
 
-Assessments
+  - Mini-games and XP badge system
 
-Mini-games and XP badge system
+- 📚 Blog Section – Mental health articles with summaries, images, and full post views
 
-📚 Blog Section – Mental health articles with summaries, images, and full post views
+- 👤 User Authentication & Profile
 
-👤 User Authentication & Profile
+  - Signup/Login with profile picture upload
 
-Signup/Login with profile picture upload
+  - Update profile
 
-Update profile
+  - Password reset/change
 
-Password reset/change
+- 🌙 Dark/Light Theme Toggle
 
-🌙 Dark/Light Theme Toggle
+- 📍 Find Psychiatrists Nearby (Coming soon)
 
-📍 Find Psychiatrists Nearby (Coming soon)
+## 🛠️ Tech Stack
+- Backend: Django 4+
 
-🛠️ Tech Stack
-Backend: Django 4+
+- Frontend: HTML, Tailwind CSS, JavaScript
 
-Frontend: HTML, Tailwind CSS, JavaScript
+- Database: SQLite (default), easily switchable to PostgreSQL
 
-Database: SQLite (default), easily switchable to PostgreSQL
-
-AI Integration: Google Gemini Pro API for chatbot
+- AI Integration: Google Gemini Pro API for chatbot
 
 Voice: Web Speech API
 
 📁 Project Structure
-php
-Copy
-Edit
 acrocare/
 │
 ├── chatbot/             # Main app: chat logic, views, models
