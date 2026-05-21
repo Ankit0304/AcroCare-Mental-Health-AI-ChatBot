@@ -2,6 +2,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import StreamingHttpResponse, JsonResponse
+import google.generativeai as genai
+import os
+from .models import ChatMessage, JournalEntry, Psychiatrist
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .forms import ProfileUpdateForm, JournalEntryForm
+from .utils.mood_detector import detect_mood
+
 
 def home(request):
     return render(request, 'home.html')
@@ -84,9 +95,7 @@ def logout_view(request):
     logout(request)
     messages.success(request, "✅ Logged out successfully!")
     return redirect("dashboard")
-from django.contrib.auth.decorators import login_required
 
- # Redirect to login if user is not authenticated
 @login_required
 def dashboard(request):
     return render(request, "dashboard.html")
@@ -95,17 +104,14 @@ def dashboard(request):
 def chat(request):
     return render(request, 'chat.html')
 
-from django.shortcuts import render
-from django.http import StreamingHttpResponse
-from django.http import JsonResponse
-import google.generativeai as genai
-from .models import ChatMessage
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
-import json
-# gemini api key
-genai.configure(api_key="Use Your API key!!..")
-
+# Configure Gemini API (lazy initialization)
+def configure_genai():
+    """Configure Google Generative AI with API key from environment."""
+    api_key = os.getenv('GOOGLE_API_KEY')
+    if api_key:
+        genai.configure(api_key=api_key)
+    else:
+        raise ValueError("❌ GOOGLE_API_KEY environment variable is required for chatbot functionality.")
 
 @login_required
 def chat_page(request):
@@ -147,7 +153,12 @@ def chatbot_response(request):
             # 🎯 Build the mood-aware prompt
             friendly_prompt = generate_friendly_prompt(mood, user_message)
 
-            # Gemini Streaming Response
+            # Gemini Streaming Response - configure API first
+            try:
+                configure_genai()
+            except ValueError as e:
+                return JsonResponse({"response": str(e)}, status=500)
+
             model = genai.GenerativeModel("gemini-1.5-pro-latest")
             response_stream = model.generate_content(friendly_prompt, stream=True)
             print("✅ Streaming response from Gemini with mood personalization...")
@@ -175,10 +186,7 @@ def chatbot_response(request):
         except Exception as e:
             print(f"❌ Error: {str(e)}")
             return JsonResponse({"response": f"Error: {str(e)}"}, status=500)
-        
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from .forms import ProfileUpdateForm
+
 
 @login_required
 def profile(request):
@@ -191,15 +199,6 @@ def profile(request):
         form =ProfileUpdateForm(instance=request.user.profile)
     return render(request, 'profile.html', {'form': form})
 
-from django.shortcuts import render, redirect
-from .models import JournalEntry
-from .utils.mood_detector import detect_mood
-from django.contrib.auth.decorators import login_required
-
-from django.shortcuts import render, redirect
-from .forms import JournalEntryForm
-from .models import JournalEntry
-from django.contrib.auth.decorators import login_required
 
 @login_required
 def journal_page(request):
@@ -237,8 +236,6 @@ def therapy_view(request):
     return render(request, 'therapy.html', {'meditations': meditations})
 
 
-from django.shortcuts import render
-from .models import Psychiatrist
 
 def psychiatrist_list(request):
     user_location = request.GET.get('location', '')  # or retrieve from user profile

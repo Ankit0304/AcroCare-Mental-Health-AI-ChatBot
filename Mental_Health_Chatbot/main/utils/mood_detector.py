@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 # Load model & tokenizer once at startup
 MODEL_NAME = "cardiffnlp/twitter-roberta-base-emotion"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, clean_up_tokenization_spaces=True)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
 
 # Emotion labels
