@@ -1,163 +1,168 @@
 {% extends "base.html" %}
-{% block title %}Chat with Buddy{% endblock %}
+{% load static %}
+{% block title %}Chat with Buddy — ACROCARE{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-b from-blue-100 to-white flex justify-center items-start py-10 px-4">
-    <div class="w-full max-w-2xl bg-white shadow-2xl rounded-3xl p-6 space-y-6 border border-blue-200">
-        <!-- Header -->
-        <div class="text-center">
-            <h2 class="text-4xl font-extrabold text-blue-700 drop-shadow">💬 ChatBuddy</h2>
-            <p class="text-gray-500 mt-2 text-lg">I'm here for you. Let's talk 💙</p>
-        </div>
-
-        <!-- Chat messages -->
-        <div id="chat-box" class="h-96 overflow-y-auto bg-blue-50 border border-blue-200 rounded-2xl p-4 flex flex-col space-y-2 scroll-smooth shadow-inner">
-            {% for chat in chat_history %}
-                <div class="p-3 rounded-2xl text-left bg-blue-600 text-white self-end ml-auto max-w-sm break-words animate-fade-in">
-                    {{ chat.message }}
-                </div>
-                <div class="p-3 rounded-2xl bg-white text-gray-800 self-start mr-auto max-w-sm shadow-sm break-words animate-fade-in">
-                    {{ chat.response }}
-                </div>
-            {% endfor %}
-        </div>
-
-        <!-- Chat Input Form -->
-        <form id="chat-form" class="flex items-center gap-2">
-            <input id="chat-input" type="text" placeholder="Tell me how you're feeling..." required
-                class="flex-1 px-5 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 bg-white shadow transition duration-150 ease-in-out" />
-            
-            <button type="button" id="mic-btn"
-                class="px-4 py-3 bg-blue-100 hover:bg-blue-200 text-xl rounded-full transition duration-150 ease-in-out shadow">
-                🎤
-            </button>
-            <button type="submit"
-                class="px-6 py-3 bg-blue-600 text-white font-bold rounded-full shadow hover:bg-blue-700 transition duration-150 ease-in-out">
-                ➤
-            </button>
-        </form>
+<div class="min-h-[calc(100vh-5rem)] bg-gradient-to-b from-blue-50 via-white to-indigo-50/30 flex justify-center items-start py-8 px-4 sm:px-6">
+  <div class="w-full max-w-3xl bg-white shadow-xl rounded-3xl p-6 sm:p-8 space-y-6 border border-slate-100">
+    
+    <!-- Header -->
+    <div class="text-center space-y-1.5">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-semibold">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <span>Compassionate AI Listener</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">ChatBuddy</h2>
+      <p class="text-slate-500 text-base">I'm here for you 24/7. Feel free to share whatever is on your mind</p>
     </div>
+
+    <!-- Chat messages -->
+    <div id="chat-box" class="h-[420px] overflow-y-auto bg-slate-50/70 border border-slate-200 rounded-3xl p-5 sm:p-6 flex flex-col space-y-3 scroll-smooth shadow-inner">
+      {% for chat in chat_history %}
+        <!-- User bubble -->
+        <div class="p-4 rounded-2xl text-left bg-blue-600 text-white self-end ml-auto max-w-md break-words text-base leading-relaxed shadow-sm animate-fade-in">
+          {{ chat.message }}
+        </div>
+        <!-- Bot bubble -->
+        <div class="p-4 rounded-2xl bg-white text-slate-800 self-start mr-auto max-w-md border border-slate-100 shadow-sm break-words text-base leading-relaxed animate-fade-in">
+          {{ chat.response }}
+        </div>
+      {% empty %}
+        <div class="m-auto text-center text-slate-400 py-12">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-3">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
+          <p class="text-base font-semibold text-slate-600">Start a conversation</p>
+          <p class="text-sm text-slate-400 mt-1">Say "Hello", talk about your day, or ask for mindfulness tips.</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Chat Input Form -->
+    <form id="chat-form" class="flex items-center gap-3">
+      <input id="chat-input"
+             type="text"
+             placeholder="Tell me how you're feeling right now..."
+             required
+             class="flex-1 px-5 py-4 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 text-slate-800 bg-white shadow-sm text-base placeholder-slate-400 transition" />
+      
+      <button type="button"
+              id="mic-btn"
+              class="px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition shadow-sm flex items-center justify-center"
+              title="Voice Input">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+      </button>
+      <button type="submit"
+              class="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base rounded-2xl shadow-md shadow-blue-500/20 transition flex items-center gap-2">
+        <span>Send</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </button>
+    </form>
+
+  </div>
 </div>
 
-<!-- Animations -->
 <style>
-    @keyframes fade-in {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-        animation: fade-in 0.4s ease-in-out both;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out both;
+  }
 </style>
 
-<!-- Chat Script -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const chatForm = document.getElementById("chat-form");
-        const chatInput = document.getElementById("chat-input");
-        const chatMessages = document.getElementById("chat-box");
+  document.addEventListener("DOMContentLoaded", function () {
+    const chatForm = document.getElementById("chat-form");
+    const chatInput = document.getElementById("chat-input");
+    const chatBox = document.getElementById("chat-box");
+    const micBtn = document.getElementById("mic-btn");
 
-        chatForm.addEventListener("submit", async function (event) {
-            event.preventDefault();
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
+    function scrollToBottom() {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    scrollToBottom();
 
-            appendMessage("user", userMessage);
-            chatInput.value = "";
+    function appendMessage(sender, text, isTemp = false) {
+      const msgDiv = document.createElement("div");
+      msgDiv.className = sender === "user"
+        ? "p-4 rounded-2xl text-left bg-blue-600 text-white self-end ml-auto max-w-md break-words text-base leading-relaxed shadow-sm animate-fade-in"
+        : "p-4 rounded-2xl bg-white text-slate-800 self-start mr-auto max-w-md border border-slate-100 shadow-sm break-words text-base leading-relaxed animate-fade-in";
+      msgDiv.innerText = text;
+      chatBox.appendChild(msgDiv);
+      scrollToBottom();
+      return msgDiv;
+    }
 
-            const botTyping = appendMessage("bot", "💭 ChatBuddy is thinking...", true);
+    chatForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const userMessage = chatInput.value.trim();
+      if (!userMessage) return;
 
-            try {
-                const response = await fetch("{% url 'chatbot_response' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
-                    body: JSON.stringify({ message: userMessage }),
-                });
+      appendMessage("user", userMessage);
+      chatInput.value = "";
 
-                if (!response.ok) {
-                    botTyping.innerText = "⚠ Oops, something went wrong!";
-                    return;
-                }
+      const botTyping = appendMessage("bot", "ChatBuddy is thinking...", true);
 
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let botMessage = "";
-                let lastChar = "";
-
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-
-                    const chunk = decoder.decode(value, { stream: true }).replace(/\n/g, " ");
-                    if (lastChar !== " " && botMessage.length > 0 && chunk[0] !== " ") {
-                        botMessage += " ";
-                    }
-
-                    botMessage += chunk;
-                    lastChar = chunk[chunk.length - 1];
-
-                    botTyping.innerText = botMessage;
-                }
-
-                botTyping.innerText = botMessage;
-            } catch (error) {
-                botTyping.innerText = `⚠ Error: ${error.message}`;
-            }
+      try {
+        const response = await fetch("{% url 'chatbot_response' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+          },
+          body: JSON.stringify({ message: userMessage }),
         });
 
-        function appendMessage(sender, message, isTyping = false) {
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("p-3", "rounded-2xl", "max-w-sm", "break-words", "shadow-sm", "my-1", "animate-fade-in");
-
-            if (sender === "user") {
-                messageElement.classList.add("bg-blue-600", "text-white", "self-end", "ml-auto");
-            } else {
-                messageElement.classList.add("bg-white", "text-gray-800", "self-start", "mr-auto");
-            }
-
-            messageElement.innerText = message;
-            chatMessages.appendChild(messageElement);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            return isTyping ? messageElement : null;
+        if (!response.ok) {
+          botTyping.innerText = "Oops, something went wrong. Please try again.";
+          return;
         }
 
-        // Voice Input
-        const micBtn = document.getElementById("mic-btn");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let botMessage = "";
 
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = 'en-US';
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
 
-            micBtn.addEventListener("click", () => {
-                recognition.start();
-                micBtn.textContent = "🎙 Listening...";
-            });
-
-            recognition.onresult = function (event) {
-                const transcript = event.results[0][0].transcript;
-                chatInput.value = transcript;
-                micBtn.textContent = "🎤";
-            };
-
-            recognition.onerror = function (event) {
-                console.error("Speech recognition error:", event.error);
-                micBtn.textContent = "🎤";
-            };
-
-            recognition.onend = function () {
-                micBtn.textContent = "🎤";
-            };
-        } else {
-            micBtn.disabled = true;
-            micBtn.title = "Speech recognition not supported";
+          const chunk = decoder.decode(value, { stream: true });
+          botMessage += chunk;
+          botTyping.innerText = botMessage;
+          scrollToBottom();
         }
+      } catch (err) {
+        botTyping.innerText = "Network error. Please try again.";
+      }
     });
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = function() {
+        micBtn.classList.add('bg-red-100', 'text-red-600');
+      };
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        chatInput.value = transcript;
+      };
+
+      recognition.onend = function() {
+        micBtn.classList.remove('bg-red-100', 'text-red-600');
+      };
+
+      micBtn.addEventListener('click', function() {
+        recognition.start();
+      });
+    } else {
+      micBtn.style.display = 'none';
+    }
+  });
 </script>
 {% endblock %}

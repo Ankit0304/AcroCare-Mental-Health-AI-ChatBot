@@ -1,4 +1,81 @@
 {% extends 'base.html' %}
+{% block title %}Contact & Help — ACROCARE{% endblock %}
+
 {% block content %}
-<!-- Content for contact -->
+<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4">
+  <div class="max-w-4xl mx-auto">
+
+    <h1 class="text-4xl font-bold text-center text-gray-900 mb-4">📞 Get Help & Support</h1>
+    <p class="text-center text-gray-600 mb-10">
+      Remember: ACROCARE is an AI companion, not a substitute for professional help. 
+      If you're in crisis, please reach out to these resources.
+    </p>
+
+    <!-- Crisis Helplines -->
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-8 mb-8">
+      <h2 class="text-2xl font-bold text-red-800 mb-6 text-center">🆘 Crisis Helplines</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <h3 class="font-semibold text-lg text-gray-800">🇮🇳 India</h3>
+          <ul class="mt-3 space-y-2 text-sm text-gray-700">
+            <li>📞 <strong>iCall:</strong> <a href="tel:9152987821" class="text-blue-600 hover:underline">9152987821</a></li>
+            <li>📞 <strong>Vandrevala Foundation:</strong> <a href="tel:18602662345" class="text-blue-600 hover:underline">1860-2662-345</a></li>
+            <li>📞 <strong>AASRA:</strong> <a href="tel:9820466726" class="text-blue-600 hover:underline">9820466726</a></li>
+            <li>📞 <strong>Snehi:</strong> <a href="tel:04424640050" class="text-blue-600 hover:underline">044-24640050</a></li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+          <h3 class="font-semibold text-lg text-gray-800">🌍 International</h3>
+          <ul class="mt-3 space-y-2 text-sm text-gray-700">
+            <li>📞 <strong>Suicide & Crisis Lifeline (US):</strong> <a href="tel:988" class="text-blue-600 hover:underline">988</a></li>
+            <li>📞 <strong>Crisis Text Line:</strong> Text HOME to <strong>741741</strong></li>
+            <li>📞 <strong>Samaritans (UK):</strong> <a href="tel:116123" class="text-blue-600 hover:underline">116 123</a></li>
+            <li>🌐 <strong>Find your local helpline:</strong> <a href="https://findahelpline.com/" target="_blank" class="text-blue-600 hover:underline">findahelpline.com</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-8">
+      <h2 class="text-xl font-semibold text-yellow-800 mb-3">⚠️ Important Disclaimer</h2>
+      <p class="text-sm text-yellow-900">
+        ACROCARE is an AI-powered mental wellness tool designed to provide emotional support and self-care exercises. 
+        It is <strong>not</strong> a licensed therapist, psychologist, or medical professional. The advice and responses 
+        generated are for informational and supportive purposes only. If you are experiencing a mental health emergency, 
+        suicidal thoughts, or are in danger, please contact emergency services (112 in India, 911 in the US) or 
+        one of the helplines listed above immediately.
+      </p>
+    </div>
+
+    <!-- Contact Form / Feedback -->
+    <div class="bg-white rounded-2xl shadow-md p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">💬 Send Us Feedback</h2>
+      <p class="text-gray-600 text-sm mb-6">Have suggestions, found a bug, or want to share your experience? We'd love to hear from you.</p>
+      <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+          <input type="text" name="name" value="{{ user.username }}"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" readonly>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" name="email" value="{{ user.email }}"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" readonly>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+          <textarea name="message" rows="4" placeholder="Share your thoughts, feedback, or suggestions..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
+        </div>
+        <button type="submit"
+          class="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700 transition">
+          Send Feedback
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
 {% endblock %}

@@ -1,173 +1,112 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Profile{% endblock %}
+{% block title %}My Profile — ACROCARE{% endblock %}
 
 {% block content %}
+<div class="min-h-screen bg-slate-50/70 py-12 px-4 sm:px-6 lg:px-8 flex justify-center items-start">
+  <div class="max-w-xl w-full bg-white shadow-xl rounded-3xl border border-slate-100 p-8 sm:p-10">
 
-<!-- Profile Page -->
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="max-w-lg w-full bg-white shadow-lg rounded-lg p-6">
-        <h2 class="text-2xl font-bold text-gray-900 text-center mb-4">🧑‍💻 Your Profile</h2>
-
-        <div class="flex flex-col items-center">
-            <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-blue-500">
-                {% if user.profile.profile_picture %}
-                    <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="w-full h-full object-cover">
-                {% else %}
-                    <img src="{% static 'images/account.png' %}" alt="Default Profile" class="w-full h-full object-cover">
-                {% endif %}
-            </div>
-
-            <div class="flex flex-col items-center">
-                <p class="text-lg font-medium text-gray-900 mt-3">{{ user.username }}</p>
-                <p class="text-gray-600">{{ user.email }}</p>
-            </div>
-
-            <!-- Profile Update Form -->
-            <form id="profileForm" method="POST" enctype="multipart/form-data" class="mt-6 space-y-4">
-                {% csrf_token %}
-
-                <!-- Hidden File Input -->
-                <input type="file" id="profilePictureInput" name="profile_picture" accept="image/*" class="hidden">
-
-                <!-- Trigger Button -->
-                <button type="button"
-                    onclick="document.getElementById('profilePictureInput').click();"
-                    class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Change Profile Picture
-                </button>
-
-                <!-- Modal for cropping -->
-                {% comment %} <div id="cropperModal"
-                    class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white p-4 rounded-lg max-w-lg w-full">
-                        <h2 class="text-lg font-bold mb-2">Crop your photo</h2>
-                        <div>
-                            <img id="imagePreview" class="max-h-96 w-full object-contain" />
-                        </div>
-                        <div class="mt-4 flex justify-end space-x-3">
-                            <button type="button" onclick="closeCropper()" class="px-4 py-2 bg-gray-300 rounded">Cancel</button>
-                            <button type="button" onclick="cropImage()" class="px-4 py-2 bg-blue-600 text-white rounded">Crop & Save</button>
-                        </div>
-                    </div>
-                </div> {% endcomment %}
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Username</label>
-                    <input type="text" name="username" value="{{ user.username }}"
-                        class="mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                        readonly>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" value="{{ user.email }}"
-                        class="mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                        readonly>
-                </div>
-
-                {% comment %} <div>
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password" placeholder="New Password"
-                        class="mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                </div> {% endcomment %}
-
-                <div>
-                    <button type="submit"
-                        class="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg shadow hover:bg-blue-700">
-                        Update Profile
-                    </button>
-                </div>
-            </form>
-        </div>
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 mb-3 shadow-sm">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Account Profile</h1>
+      <p class="text-sm sm:text-base text-slate-500 mt-1.5">Manage your account information and avatar photo</p>
     </div>
+
+    <!-- Profile Picture Display & Live Preview -->
+    <div class="flex flex-col items-center mb-8">
+      <div class="relative group">
+        <div class="w-32 h-32 rounded-full overflow-hidden ring-4 ring-blue-500/20 shadow-md bg-slate-100 flex items-center justify-center">
+          <img id="avatarPreview"
+               src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'images/account.png' %}{% endif %}"
+               alt="Profile Picture"
+               class="w-full h-full object-cover">
+        </div>
+      </div>
+      <p class="text-xl font-bold text-slate-900 mt-4">{{ user.username }}</p>
+      <p class="text-sm text-slate-500">{{ user.email }}</p>
+    </div>
+
+    <!-- Profile Update Form -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+      <!-- File input -->
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-2">Change Profile Photo</label>
+        <div class="flex items-center gap-3">
+          <input type="file"
+                 id="profilePictureInput"
+                 name="profile_picture"
+                 accept="image/*"
+                 class="block w-full text-sm text-slate-500
+                        file:mr-4 file:py-3 file:px-5
+                        file:rounded-2xl file:border-0
+                        file:text-sm file:font-bold
+                        file:bg-blue-50 file:text-blue-700
+                        hover:file:bg-blue-100
+                        cursor-pointer border border-slate-200 rounded-2xl p-1.5 bg-slate-50/50">
+        </div>
+        <p class="text-xs text-slate-400 mt-1.5">Supported formats: JPG, PNG, WEBP, GIF</p>
+      </div>
+
+      <!-- Username (Readonly) -->
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-2">Username</label>
+        <input type="text"
+               value="{{ user.username }}"
+               class="w-full px-4 py-3 text-sm sm:text-base rounded-2xl border border-slate-200 bg-slate-100 text-slate-600 font-medium cursor-not-allowed"
+               readonly>
+      </div>
+
+      <!-- Email (Readonly) -->
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+        <input type="email"
+               value="{{ user.email }}"
+               class="w-full px-4 py-3 text-sm sm:text-base rounded-2xl border border-slate-200 bg-slate-100 text-slate-600 font-medium cursor-not-allowed"
+               readonly>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+              class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base rounded-2xl shadow-md shadow-blue-500/20 hover:shadow-lg transition duration-200 flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+        <span>Save Profile Photo</span>
+      </button>
+    </form>
+
+    <!-- Change Password Link -->
+    <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
+      <div>
+        <p class="text-sm font-bold text-slate-800">Password & Security</p>
+        <p class="text-xs text-slate-400 mt-0.5">Keep your account secure with regular updates</p>
+      </div>
+      <a href="{% url 'password_change' %}"
+         class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition flex items-center gap-2">
+        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        <span>Change Password</span>
+      </a>
+    </div>
+
+  </div>
 </div>
 
-<!-- CropperJS CDN -->
-<link href="https://unpkg.com/cropperjs/dist/cropper.min.css" rel="stylesheet" />
-<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
-
 <script>
-    let cropper;
-    const input = document.getElementById('profilePictureInput');
-    const modal = document.getElementById('cropperModal');
-    const preview = document.getElementById('imagePreview');
+  const input = document.getElementById('profilePictureInput');
+  const preview = document.getElementById('avatarPreview');
 
-    // Wait for the image to fully load before initializing cropper
-    function waitForImageToLoad(img) {
-        return new Promise((resolve) => {
-            img.onload = () => {
-                // Small delay to allow image rendering
-                setTimeout(() => resolve(), 100);
-            };
-            img.onerror = () => alert("Failed to load image.");
-        });
+  input?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        preview.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     }
-
-    input.addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                preview.onload = function () {
-                    // Initialize cropper only after image is loaded
-                    if (cropper) cropper.destroy();
-                    cropper = new Cropper(preview, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        autoCropArea: 1
-                    });
-                    modal.classList.remove('hidden');
-                };
-                preview.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    function closeCropper() {
-        modal.classList.add('hidden');
-        
-        // Destroy cropper and reset image
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-    
-        // Clear the preview src to remove residual CropperJS styles
-        preview.src = '';
-        input.value = '';
-    }
-    
-
-    function cropImage() {
-        console.log("Crop button clicked!");
-    
-        if (!cropper) {
-            alert("Please wait for the image to load fully before cropping.");
-            return;
-        }
-    
-        const canvas = cropper.getCroppedCanvas({
-            width: 300,
-            height: 300,
-        });
-    
-        canvas.toBlob(blob => {
-            if (!blob) {
-                alert("Crop failed. Try again.");
-                return;
-            }
-    
-            const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
-    
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            input.files = dataTransfer.files;
-    
-            closeCropper();
-            document.getElementById('profileForm').submit();
-        }, 'image/jpeg');
-    }
-</script>    
-    
+  });
+</script>
 {% endblock %}

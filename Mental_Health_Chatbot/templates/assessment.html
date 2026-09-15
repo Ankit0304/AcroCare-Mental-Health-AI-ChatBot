@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block title %}PHQ-9 Mental Health Assessment — ACROCARE{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-blue-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 mb-3 shadow-sm">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">PHQ-9 Mental Health Assessment</h1>
+      <p class="text-base sm:text-lg text-slate-600 mt-2">
+        Over the <strong>last 2 weeks</strong>, how often have you been bothered by the following problems?
+      </p>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8 text-sm sm:text-base text-amber-900 flex items-start gap-3">
+      <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <p>This is a screening tool, not a clinical diagnosis. Please consult a qualified mental health professional for formal evaluation.</p>
+    </div>
+
+    {% if result %}
+    <!-- Results Card -->
+    <div class="bg-white rounded-3xl shadow-lg p-8 sm:p-10 mb-8 border-l-8
+      {% if result.info.color == 'green' %}border-emerald-500{% endif %}
+      {% if result.info.color == 'yellow' %}border-amber-500{% endif %}
+      {% if result.info.color == 'orange' %}border-orange-500{% endif %}
+      {% if result.info.color == 'red' %}border-rose-500{% endif %}
+    ">
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">{{ result.info.title }}</h2>
+      <p class="text-4xl sm:text-5xl font-extrabold
+        {% if result.info.color == 'green' %}text-emerald-600{% endif %}
+        {% if result.info.color == 'yellow' %}text-amber-600{% endif %}
+        {% if result.info.color == 'orange' %}text-orange-600{% endif %}
+        {% if result.info.color == 'red' %}text-rose-600{% endif %}
+        my-4
+      ">Score: {{ result.total_score }} / 27</p>
+      <p class="text-slate-700 text-base sm:text-lg leading-relaxed">{{ result.info.message }}</p>
+
+      {% if result.severity == 'moderately_severe' or result.severity == 'severe' %}
+      <div class="mt-6 bg-rose-50 border border-rose-200 rounded-2xl p-5">
+        <p class="text-rose-900 font-bold text-base flex items-center gap-2">
+          <svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <span>If you're in crisis, please reach out immediately:</span>
+        </p>
+        <p class="text-rose-700 text-sm sm:text-base mt-2">iCall: 9152987821 | AASRA: 9820466726 | Crisis Lifeline (US): 988</p>
+      </div>
+      {% endif %}
+
+      <div class="mt-8 flex gap-4">
+        <a href="{% url 'assessment' %}" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition text-sm">
+          Retake Assessment
+        </a>
+        <a href="{% url 'therapy' %}" class="px-6 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition text-sm">
+          Return to Self-Care
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if not result %}
+    <!-- Assessment Form -->
+    <form method="POST" class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 sm:p-10 space-y-8">
+      {% csrf_token %}
+      <div class="space-y-6">
+        {% for question in questions %}
+        <div class="border-b border-slate-100 pb-6 last:border-b-0">
+          <p class="font-bold text-slate-900 text-base sm:text-lg mb-4">
+            <span class="text-blue-600 font-extrabold">{{ forloop.counter }}.</span> {{ question }}
+          </p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <label class="flex items-center space-x-2.5 bg-slate-50 rounded-2xl p-3.5 cursor-pointer hover:bg-blue-50 transition border border-slate-100">
+              <input type="radio" name="q{{ forloop.counter0 }}" value="0" required class="w-4 h-4 text-blue-600">
+              <span class="text-sm font-semibold text-slate-700">Not at all</span>
+            </label>
+            <label class="flex items-center space-x-2.5 bg-slate-50 rounded-2xl p-3.5 cursor-pointer hover:bg-blue-50 transition border border-slate-100">
+              <input type="radio" name="q{{ forloop.counter0 }}" value="1" class="w-4 h-4 text-blue-600">
+              <span class="text-sm font-semibold text-slate-700">Several days</span>
+            </label>
+            <label class="flex items-center space-x-2.5 bg-slate-50 rounded-2xl p-3.5 cursor-pointer hover:bg-blue-50 transition border border-slate-100">
+              <input type="radio" name="q{{ forloop.counter0 }}" value="2" class="w-4 h-4 text-blue-600">
+              <span class="text-sm font-semibold text-slate-700">More than half</span>
+            </label>
+            <label class="flex items-center space-x-2.5 bg-slate-50 rounded-2xl p-3.5 cursor-pointer hover:bg-blue-50 transition border border-slate-100">
+              <input type="radio" name="q{{ forloop.counter0 }}" value="3" class="w-4 h-4 text-blue-600">
+              <span class="text-sm font-semibold text-slate-700">Nearly every day</span>
+            </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit"
+        class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 transition text-base sm:text-lg">
+        Submit Assessment
+      </button>
+    </form>
+    {% endif %}
+
+    <!-- Past Results -->
+    {% if past_results %}
+    <div class="mt-12">
+      <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span>Your Past Assessments</span>
+      </h2>
+      <div class="space-y-3">
+        {% for r in past_results %}
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 flex items-center justify-between">
+          <div>
+            <span class="text-sm text-slate-500">{{ r.created_at|date:"M d, Y" }}</span>
+            <span class="ml-3 px-3 py-1 rounded-full text-xs font-bold
+              {% if r.severity == 'minimal' %}bg-emerald-100 text-emerald-800
+              {% elif r.severity == 'mild' %}bg-amber-100 text-amber-800
+              {% elif r.severity == 'moderate' %}bg-orange-100 text-orange-800
+              {% else %}bg-rose-100 text-rose-800{% endif %}
+            ">{{ r.get_severity_display }}</span>
+          </div>
+          <span class="font-extrabold text-slate-800 text-base">Score: {{ r.total_score }}/27</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

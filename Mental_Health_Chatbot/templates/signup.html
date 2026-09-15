@@ -1,74 +1,132 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Signup{% endblock %}
+{% block title %}Create Account — ACROCARE{% endblock %}
 
 {% block content %}
-<div 
-    class="h-full w-full flex items-center justify-center bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8"
-    style="background-image: url('{% static 'images/signup-bg.jpg' %}');"
->
-    <div class="max-w-md w-full space-y-8 p-8 rounded-3xl shadow-2xl border border-white/20 
-                backdrop-blur-xl bg-white/60 hover:shadow-indigo-300 transition duration-300 ease-in-out">
-        <div>
-            <h2 class="text-center text-4xl font-extrabold text-gray-800 drop-shadow-md">Create Your Account</h2>
-            <p class="mt-2 text-center text-sm text-gray-700">
-                Already have an account?
-                <a href="{% url 'login' %}" class="font-semibold text-indigo-600 hover:underline">Login here</a>
-            </p>
-        </div>
-
-        <form class="mt-8 space-y-6" action="{% url 'signup' %}" method="POST">
-            {% csrf_token %}
-            <div class="rounded-xl bg-white/30 shadow-inner p-4 space-y-5">
-
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                    <input id="username" name="username" type="text" required
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 
-                        focus:ring-indigo-400 focus:outline-none placeholder-gray-500 text-sm"
-                        placeholder="Enter your username">
-                </div>
-
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input id="email" name="email" type="email" required
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 
-                        focus:ring-indigo-400 focus:outline-none placeholder-gray-500 text-sm"
-                        placeholder="Enter your email address">
-                </div>
-
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input id="password" name="password" type="password" required
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 
-                        focus:ring-indigo-400 focus:outline-none placeholder-gray-500 text-sm"
-                        placeholder="Create a password">
-                </div>
-
-                <div>
-                    <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                    <input id="confirm-password" name="confirm_password" type="password" required
-                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 
-                        focus:ring-indigo-400 focus:outline-none placeholder-gray-500 text-sm"
-                        placeholder="Re-enter your password">
-                </div>
-
-            </div>
-
-            {% if error %}
-                <p class="text-red-500 text-sm text-center">{{ error }}</p>
-            {% endif %}
-
-            <div>
-                <button type="submit"
-                    class="w-full py-2 px-4 text-sm font-semibold text-white bg-gradient-to-r 
-                    from-indigo-500 to-purple-600 rounded-lg shadow-lg hover:shadow-xl 
-                    transition duration-300 ease-in-out hover:from-indigo-600 hover:to-purple-700">
-                    Sign Up
-                </button>
-            </div>
-        </form>
+<div class="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50/40 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-100 p-8 sm:p-10">
+    
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 mb-3 shadow-sm">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Create Account</h1>
+      <p class="text-sm sm:text-base text-slate-500 mt-1.5">Join ACROCARE to start your mental wellness path</p>
     </div>
-</div>
-{% endblock %}
 
+    <!-- Error message -->
+    {% if error %}
+      <div class="flex items-center gap-2.5 p-4 mb-6 text-sm font-medium text-rose-800 bg-rose-50 border border-rose-200 rounded-2xl">
+        <svg class="w-5 h-5 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <span>{{ error }}</span>
+      </div>
+    {% endif %}
+
+    <!-- Form -->
+    <form action="{% url 'signup' %}" method="POST" class="space-y-4">
+      {% csrf_token %}
+
+      <!-- Username -->
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1.5">Username</label>
+        <input type="text"
+               name="username"
+               class="w-full px-4 py-3 text-sm sm:text-base rounded-2xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-800 transition placeholder-slate-400"
+               placeholder="Choose a username"
+               required>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1.5">Email Address</label>
+        <input type="email"
+               name="email"
+               class="w-full px-4 py-3 text-sm sm:text-base rounded-2xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-800 transition placeholder-slate-400"
+               placeholder="name@example.com"
+               required>
+      </div>
+
+      <!-- Password with Eye Toggle -->
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1.5">Password</label>
+        <div class="relative">
+          <input type="password"
+                 id="signupPassword"
+                 name="password"
+                 class="w-full px-4 py-3 pr-12 text-sm sm:text-base rounded-2xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-800 transition placeholder-slate-400"
+                 placeholder="Create a strong password"
+                 required>
+          <button type="button"
+                  onclick="togglePasswordVisibility('signupPassword', this)"
+                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none p-1.5"
+                  aria-label="Toggle password visibility">
+            <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <svg class="w-5 h-5 eye-slash-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Confirm Password with Eye Toggle -->
+      <div>
+        <label class="block text-sm font-bold text-slate-700 mb-1.5">Confirm Password</label>
+        <div class="relative">
+          <input type="password"
+                 id="signupConfirmPassword"
+                 name="confirm_password"
+                 class="w-full px-4 py-3 pr-12 text-sm sm:text-base rounded-2xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-slate-800 transition placeholder-slate-400"
+                 placeholder="Re-enter your password"
+                 required>
+          <button type="button"
+                  onclick="togglePasswordVisibility('signupConfirmPassword', this)"
+                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none p-1.5"
+                  aria-label="Toggle password visibility">
+            <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <svg class="w-5 h-5 eye-slash-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit button -->
+      <button type="submit"
+              class="w-full py-3.5 mt-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base rounded-2xl shadow-md shadow-indigo-500/25 hover:shadow-lg transition duration-200">
+        Create Account
+      </button>
+    </form>
+
+    <!-- Footer -->
+    <div class="text-center mt-6 pt-6 border-t border-slate-100">
+      <p class="text-sm text-slate-500">
+        Already have an account?
+        <a href="{% url 'login' %}" class="font-bold text-indigo-600 hover:underline">Sign In</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+    const eyeIcon = btn.querySelector('.eye-icon');
+    const eyeSlashIcon = btn.querySelector('.eye-slash-icon');
+    if (eyeIcon && eyeSlashIcon) {
+      eyeIcon.classList.toggle('hidden', isPassword);
+      eyeSlashIcon.classList.toggle('hidden', !isPassword);
+    }
+  }
+</script>
+{% endblock %}

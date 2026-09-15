@@ -1,109 +1,276 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Welcome to Your AI Therapist{% endblock %}
+{% block title %}Dashboard — ACROCARE{% endblock %}
 
 {% block content %}
-<!-- Page Wrapper -->
-<div class="relative min-h-screen flex flex-col justify-between overflow-hidden">
-  <!-- Foreground Content -->
-  <div class="relative z-10">
-    <!-- 👋 Hero Section -->
-    <div class="flex items-center justify-center min-h-screen">
-        <div class="flex flex-col md:flex-row items-center justify-between px-8 md:px-24 py-24 w-full bg-white bg-opacity-80 backdrop-blur-md rounded-3xl shadow-2xl">
-          <!-- Text Content -->
-          <div class="max-w-xl text-center md:text-left space-y-6">
-            <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight">
-              Your Personal <span class="text-blue-600">AI Mental Health</span> Companion
-            </h1>
-            <p class="text-lg text-gray-700">
-              Talk to an AI that listens. No judgment. Available 24/7 to support your emotional well-being and self-growth.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <a href="{% url 'therapy' %}" class="px-8 py-3 bg-blue-600 text-white font-semibold text-lg rounded-xl shadow hover:bg-blue-700 transition duration-300">
-                💬 Chat with Buddy
-              </a>
-            </div>
-          </div>
+<div class="min-h-screen bg-slate-50/60 pb-16">
   
-          <!-- Illustration -->
-          <div class="w-full md:w-1/2 mt-10 md:mt-0 flex justify-center">
-            <img src="{% static 'images/chat_bud.png' %}" alt="Chatbot illustration" class="w-64 md:w-96 rounded-xl shadow-lg">
-          </div>
+  <!-- Top Welcome & Stats Header -->
+  <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-14 px-4 sm:px-6 lg:px-8 shadow-md">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md text-sm font-semibold mb-3">
+          <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Welcome back, {{ user.first_name|default:user.username }}</span>
         </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight">Your Wellness Dashboard</h1>
+        <p class="text-blue-100 text-base sm:text-lg mt-2 max-w-xl">
+          Take a moment for yourself today. Talk to Buddy, reflect in your journal, or try a guided breathing session.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="{% url 'chat' %}" class="px-6 py-3.5 bg-white text-blue-600 hover:bg-blue-50 font-bold rounded-2xl shadow-md transition duration-150 flex items-center gap-2.5 text-base">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          <span>Open Chat Buddy</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+    
+    <!-- Stats Cards Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+      
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm text-slate-500 font-semibold">Chat Messages</p>
+          <p class="text-3xl font-extrabold text-slate-900 mt-0.5">{{ chat_count|default:"0" }}</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm text-slate-500 font-semibold">Journal Entries</p>
+          <p class="text-3xl font-extrabold text-slate-900 mt-0.5">{{ journal_count|default:"0" }}</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm text-slate-500 font-semibold">Self-Care Hub</p>
+          <p class="text-lg font-bold text-purple-600 mt-0.5">Daily Zen</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm text-slate-500 font-semibold">Mental Check-in</p>
+          <p class="text-lg font-bold text-amber-600 mt-0.5">PHQ-9 Ready</p>
+        </div>
+      </div>
+
     </div>
 
-    <!-- 🌟 Features Section -->
-    <section class="bg-gray-50 bg-opacity-90 py-20 px-6 md:px-20">
-      <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">🌿 What We Offer</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-center">
-        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold mb-2">💬 Chat with AI Buddy</h3>
-          <p class="text-gray-600">A caring companion to talk to anytime. Feel heard and supported without judgment.</p>
-        </div>
-        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold mb-2">🧘 Guided Meditation</h3>
-          <p class="text-gray-600">Relax and center yourself with our calming, AI-curated meditation sessions.</p>
-        </div>
-        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold mb-2">🌬️ Breathing Exercises</h3>
-          <p class="text-gray-600">Manage stress with visual and interactive breathing routines tailored for you.</p>
-        </div>
-        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold mb-2">📝 Mood-Based Recommendations</h3>
-          <p class="text-gray-600">Receive personalized tips based on your current emotions and chat insights.</p>
-        </div>
-        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold mb-2">📓 Journaling & Emotion Tracking</h3>
-          <p class="text-gray-600">Log your thoughts and visualize mood trends over time.</p>
-        </div>
-        <div class="bg-white shadow-lg p-6 rounded-2xl hover:shadow-xl transition">
-          <h3 class="text-xl font-semibold mb-2">🧠 Quick Mental Health Assessments</h3>
-          <p class="text-gray-600">Gauge your mental state through quick and simple check-ins.</p>
-        </div>
-      </div>
-    </section>
+    <!-- Quick Navigation Hub -->
+    <div class="mb-14">
+      <h2 class="text-2xl font-extrabold text-slate-900 mb-5 flex items-center gap-2.5">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <span>Quick Actions & Tools</span>
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+        
+        <a href="{% url 'chat' %}" class="bg-white hover:bg-blue-50/50 rounded-3xl p-6 text-center border border-slate-100 hover:border-blue-200 shadow-sm transition group">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-3.5 group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
+          <p class="text-base font-bold text-slate-800">Chat Buddy</p>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Talk to AI 24/7</p>
+        </a>
 
-    <!-- 💖 User Reviews Section -->
-    <section class="py-20 px-6 md:px-20 bg-white bg-opacity-95">
-      <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">💖 What Users Say</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-        <div class="bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition">
-          <p class="italic text-gray-700">"This chatbot really helped me during a tough night. It felt like someone truly cared."</p>
-          <p class="mt-4 font-semibold text-blue-700">– Aanya, Student</p>
-        </div>
-        <div class="bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition">
-          <p class="italic text-gray-700">"The meditation and breathing exercises are super calming. I use them daily!"</p>
-          <p class="mt-4 font-semibold text-blue-700">– Raj, Software Engineer</p>
-        </div>
-        <div class="bg-blue-50 p-6 rounded-2xl shadow-md hover:shadow-lg transition">
-          <p class="italic text-gray-700">"I love how it tracks my mood and gives helpful suggestions. Feels like a real companion."</p>
-          <p class="mt-4 font-semibold text-blue-700">– Priya, Freelancer</p>
-        </div>
-      </div>
-    </section>
+        <a href="{% url 'journal_page' %}" class="bg-white hover:bg-indigo-50/50 rounded-3xl p-6 text-center border border-slate-100 hover:border-indigo-200 shadow-sm transition group">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3.5 group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </div>
+          <p class="text-base font-bold text-slate-800">Journal</p>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Log your thoughts</p>
+        </a>
 
-    <!-- ❓ FAQ Section -->
-    <section class="bg-gray-100 py-20 px-6 md:px-20">
-      <h2 class="text-4xl font-bold text-center text-gray-800 mb-12">❓ Frequently Asked Questions</h2>
-      <div class="max-w-3xl mx-auto space-y-8">
-        <div class="bg-white p-6 rounded-2xl shadow-md">
-          <h3 class="font-semibold text-xl">Is this a real therapist?</h3>
-          <p class="text-gray-700 mt-2">No, this is an AI-based support system designed to provide emotional support and self-care tools. It does not replace professional therapy.</p>
+        <a href="{% url 'therapy' %}" class="bg-white hover:bg-purple-50/50 rounded-3xl p-6 text-center border border-slate-100 hover:border-purple-200 shadow-sm transition group">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mb-3.5 group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          </div>
+          <p class="text-base font-bold text-slate-800">Self-Care Space</p>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Meditation & Breathing</p>
+        </a>
+
+        <a href="/blogs/" class="bg-white hover:bg-rose-50/50 rounded-3xl p-6 text-center border border-slate-100 hover:border-rose-200 shadow-sm transition group">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mb-3.5 group-hover:scale-110 transition">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+          </div>
+          <p class="text-base font-bold text-slate-800">Wellness Articles</p>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Read guides</p>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Original Hero Overview & Companion Card -->
+    <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-slate-100 mb-14">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-semibold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            <span>ACROCARE AI Ecosystem</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            Empathetic AI Always Ready To Listen
+          </h2>
+          <p class="text-slate-600 text-base leading-relaxed">
+            Whenever life gets overwhelming, your AI companion is here 24/7. Explore mindful breathing exercises, log emotions in your private journal, or check in on your psychological well-being.
+          </p>
+          <div class="flex flex-wrap gap-3.5 pt-3">
+            <a href="{% url 'chat' %}" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-md transition">
+              Start Conversation
+            </a>
+            <a href="{% url 'therapy' %}" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition">
+              Try Self-Care
+            </a>
+          </div>
         </div>
-        <div class="bg-white p-6 rounded-2xl shadow-md">
-          <h3 class="font-semibold text-xl">Is my data private?</h3>
-          <p class="text-gray-700 mt-2">Absolutely. Your data is securely stored and never shared. We respect your privacy and confidentiality.</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-md">
-          <h3 class="font-semibold text-xl">Can I access this anytime?</h3>
-          <p class="text-gray-700 mt-2">Yes, our AI buddy is available 24/7. No appointments needed—just visit and start chatting.</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-md">
-          <h3 class="font-semibold text-xl">Is this free to use?</h3>
-          <p class="text-gray-700 mt-2">Yes, the core features are completely free to use for everyone.</p>
+        <div class="flex justify-center">
+          <img src="{% static 'images/chat_bud.png' %}" alt="Chatbot illustration" class="w-64 h-64 object-contain rounded-2xl drop-shadow-md">
         </div>
       </div>
-    </section>
+    </div>
+
+    <!-- Features Section Grid -->
+    <div class="mb-14">
+      <h2 class="text-2xl font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+        <span>Platform Features & Resources</span>
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-7 shadow-sm border border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1.5">AI Chat Companion</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">Talk freely anytime with an empathetic AI buddy trained to support your thoughts.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl p-7 shadow-sm border border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1.5">Guided Meditation</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">Relax and center yourself with our calming, AI-curated meditation sessions.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl p-7 shadow-sm border border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1.5">Breathing Exercises</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">Manage stress with visual and interactive breathing routines tailored for you.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl p-7 shadow-sm border border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1.5">Mood Insights</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">Receive personalized tips based on your current emotions and chat insights.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl p-7 shadow-sm border border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1.5">Emotion Journaling</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">Log your thoughts and visualize mood trends over time with emotion AI tagging.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl p-7 shadow-sm border border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1.5">PHQ-9 Assessments</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">Gauge your mental state through quick and validated clinical check-ins.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonials / Community Reviews -->
+    <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-slate-100 mb-14">
+      <h2 class="text-2xl font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+        <span>What Users Say</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-blue-50/50 p-7 rounded-3xl border border-blue-100/50">
+          <p class="italic text-sm sm:text-base text-slate-700 leading-relaxed mb-4">"This chatbot really helped me during a tough night. It felt like someone truly cared."</p>
+          <p class="text-sm font-bold text-blue-700">— Aanya, Student</p>
+        </div>
+        <div class="bg-indigo-50/50 p-7 rounded-3xl border border-indigo-100/50">
+          <p class="italic text-sm sm:text-base text-slate-700 leading-relaxed mb-4">"The meditation and breathing exercises are super calming. I use them daily!"</p>
+          <p class="text-sm font-bold text-indigo-700">— Raj, Software Engineer</p>
+        </div>
+        <div class="bg-purple-50/50 p-7 rounded-3xl border border-purple-100/50">
+          <p class="italic text-sm sm:text-base text-slate-700 leading-relaxed mb-4">"I love how it tracks my mood and gives helpful suggestions. Feels like a real companion."</p>
+          <p class="text-sm font-bold text-purple-700">— Priya, Freelancer</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-slate-100 mb-14">
+      <h2 class="text-2xl font-extrabold text-slate-900 mb-6 flex items-center gap-2.5">
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Frequently Asked Questions</span>
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-slate-50 rounded-3xl">
+          <h3 class="font-bold text-base text-slate-900 mb-2">Is this a real therapist?</h3>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">No, this is an AI-based support system designed to provide emotional support and self-care tools. It does not replace professional clinical therapy.</p>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-3xl">
+          <h3 class="font-bold text-base text-slate-900 mb-2">Is my data private?</h3>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">Absolutely. Your data is securely stored and never shared. We respect your privacy and confidentiality.</p>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-3xl">
+          <h3 class="font-bold text-base text-slate-900 mb-2">Can I access this anytime?</h3>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">Yes, our AI buddy is available 24/7 with zero waiting time.</p>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-3xl">
+          <h3 class="font-bold text-base text-slate-900 mb-2">Is this free to use?</h3>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">Yes, the core wellness tools and chat features are free for all members.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crisis Helpline Banner -->
+    <div class="bg-rose-50 border border-rose-200 rounded-3xl p-8 sm:p-10 text-center">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 mb-3.5">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      </div>
+      <h3 class="text-xl font-bold text-rose-900">Need Immediate Help?</h3>
+      <p class="text-sm sm:text-base text-rose-700 mt-1 max-w-md mx-auto">If you are facing a severe mental health crisis, please reach out to professional emergency resources immediately.</p>
+      <div class="flex flex-wrap justify-center gap-3.5 mt-5">
+        <a href="tel:988" class="px-5 py-3 bg-rose-600 text-white rounded-xl text-sm font-bold hover:bg-rose-700 transition shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          <span>Suicide & Crisis Lifeline: 988</span>
+        </a>
+        <a href="tel:9152987821" class="px-5 py-3 bg-rose-600 text-white rounded-xl text-sm font-bold hover:bg-rose-700 transition shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          <span>iCall (India): 9152987821</span>
+        </a>
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}
