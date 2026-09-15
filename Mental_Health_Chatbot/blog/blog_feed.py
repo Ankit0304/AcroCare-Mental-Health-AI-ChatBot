@@ -19,7 +19,7 @@ def categorize_article(title, summary):
 def fetch_all_feeds():
     urls = [
         "https://www.mentalhealth.org.uk/rss.xml",
-        "https://rss.app/feeds/YOUR_EARKICK_FEED_ID.xml",  # replace with your RSS feed
+        # Add more RSS feed URLs here
     ]
 
     all_articles = []
