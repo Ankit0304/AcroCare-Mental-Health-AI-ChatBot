@@ -1,26 +1,237 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold mb-8 text-center">Latest Blogs</h1>
+{% block title %}Wellness Articles & Blog — ACROCARE{% endblock %}
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {% for blog in blogs %}
-        <div class="bg-white rounded-lg shadow hover:shadow-xl transition duration-300">
-            {% if blog.image_name %}
-            <img src="{% static 'blog/images/' %}{{ blog.image_name }}" alt="{{ blog.title }}" class="w-full h-48 object-cover rounded-t-lg" />
-            {% endif %}
-            <div class="p-4">
-                <h2 class="text-lg font-semibold mb-2">{{ blog.title }}</h2>
-                <p class="text-gray-600 text-sm mb-4">{{ blog.summary|truncatewords:20 }}</p>
-                <a href="{{ blog.link }}" target="_blank"
-                   class="text-indigo-600 hover:underline font-medium text-sm">
-                    Read more →
-                </a>
-            </div>
-        </div>
-        {% endfor %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50/20 py-10 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Header Section -->
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/80 text-blue-700 text-xs font-semibold uppercase tracking-wider mb-4 border border-blue-200 shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        Evidence-Based Wellness Articles
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+        Mental Wellness <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">Library</span>
+      </h1>
+      <p class="text-slate-600 text-base sm:text-lg">
+        Explore curated clinical insights, mindfulness practices, and articles aggregated from top mental health institutions.
+      </p>
     </div>
+
+    <!-- Admin Control Bar (Visible Only to Admins / Staff) -->
+    {% if is_admin %}
+    <div class="mb-8 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-indigo-900 via-slate-900 to-blue-900 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 border border-indigo-700/50">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div>
+          <h2 class="font-bold text-sm sm:text-base flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            Admin Management Console
+          </h2>
+          <p class="text-xs text-indigo-200">You have editorial permissions to publish original articles or scrape fresh web feeds.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <a href="{% url 'blog_create' %}" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold shadow-md transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Write Article
+        </a>
+        <a href="{% url 'sync_web_blogs' %}" class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs sm:text-sm font-semibold transition">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Sync Web Feeds
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Search & Filter Controls -->
+    <div class="bg-white rounded-3xl p-4 sm:p-6 shadow-sm border border-slate-100 mb-10">
+      <form method="GET" action="{% url 'blog_list' %}" class="space-y-4">
+        
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input 
+            type="text" 
+            name="q" 
+            value="{{ query }}" 
+            placeholder="Search articles by topic, keyword, or symptoms (e.g., anxiety, sleep, burnout)..." 
+            class="w-full pl-12 pr-28 py-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 text-sm sm:text-base focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition"
+          />
+          <button type="submit" class="absolute right-2 top-2 bottom-2 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shadow-sm">
+            Search
+          </button>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none pt-1">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap mr-1">Categories:</span>
+          {% for cat in categories %}
+          <a href="?category={{ cat }}{% if query %}&q={{ query }}{% endif %}" 
+             class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 
+             {% if selected_category|lower == cat|lower %}
+               bg-blue-600 text-white shadow-md shadow-blue-500/20
+             {% else %}
+               bg-slate-100 hover:bg-slate-200/80 text-slate-700 hover:text-slate-900
+             {% endif %}">
+            {{ cat }}
+          </a>
+          {% endfor %}
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Active Filters & Result Count -->
+    <div class="flex items-center justify-between mb-6 px-1">
+      <p class="text-xs sm:text-sm text-slate-500 font-medium">
+        Showing <span class="font-bold text-slate-800">{{ total_count }}</span> article{{ total_count|pluralize }}
+        {% if selected_category != 'All' %} in <span class="font-semibold text-blue-600">"{{ selected_category }}"</span>{% endif %}
+        {% if query %} for <span class="font-semibold text-slate-800">"{{ query }}"</span>{% endif %}
+      </p>
+      {% if query or selected_category != 'All' %}
+      <a href="{% url 'blog_list' %}" class="text-xs font-semibold text-rose-600 hover:underline flex items-center gap-1">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Reset filters
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Articles Grid -->
+    {% if blogs %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      {% for blog in blogs %}
+      <article class="bg-white rounded-3xl overflow-hidden border border-slate-100 hover:border-blue-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
+        
+        <!-- Image & Badges -->
+        <div class="relative h-48 sm:h-52 overflow-hidden bg-slate-100">
+          {% if blog.image_url %}
+            <img src="{{ blog.image_url }}" alt="{{ blog.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          {% elif blog.image_name %}
+            <img src="{% static 'blog/images/' %}{{ blog.image_name }}" alt="{{ blog.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          {% else %}
+            <div class="w-full h-full bg-gradient-to-br from-blue-600/10 via-indigo-600/10 to-purple-600/20 flex items-center justify-center text-blue-600">
+              <svg class="w-12 h-12 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+          {% endif %}
+          
+          <!-- Category Badge -->
+          <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow-md backdrop-blur-md 
+            {% if blog.category == 'Anxiety' %} bg-rose-500/90 text-white
+            {% elif blog.category == 'Mindfulness' %} bg-emerald-600/90 text-white
+            {% elif blog.category == 'Sleep' %} bg-indigo-600/90 text-white
+            {% elif blog.category == 'Stress Relief' %} bg-amber-500/90 text-white
+            {% elif blog.category == 'Depression' %} bg-purple-600/90 text-white
+            {% else %} bg-blue-600/90 text-white {% endif %}">
+            {{ blog.category }}
+          </span>
+
+          <!-- Read Time Badge -->
+          <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900/75 text-white backdrop-blur-md flex items-center gap-1 shadow">
+            <svg class="w-3 h-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ blog.read_time }}
+          </span>
+        </div>
+
+        <!-- Content Body -->
+        <div class="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+          <div>
+            <!-- Source Tag -->
+            <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium mb-2.5">
+              <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+              </svg>
+              <span>{{ blog.source }}</span>
+            </div>
+
+            <!-- Title -->
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-2 leading-snug">
+              {{ blog.title }}
+            </h2>
+
+            <!-- Summary -->
+            <p class="text-slate-600 text-xs sm:text-sm line-clamp-3 leading-relaxed mb-4">
+              {{ blog.summary }}
+            </p>
+          </div>
+
+          <!-- Card Footer -->
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {{ blog.created_at|date:"M d, Y" }}
+            </span>
+
+            {% if blog.link %}
+              <a href="{% url 'blog_redirect' %}?link={{ blog.link|urlencode }}&title={{ blog.title|urlencode }}" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-700 group-hover:translate-x-0.5 transition-all">
+                Read Article
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            {% else %}
+              <a href="{% url 'blog_detail' blog.id %}" 
+                 class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-700 group-hover:translate-x-0.5 transition-all">
+                Read Article
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            {% endif %}
+          </div>
+
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-sm max-w-lg mx-auto">
+      <div class="w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mx-auto flex items-center justify-center mb-4">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 mb-2">No Articles Found</h3>
+      <p class="text-xs sm:text-sm text-slate-500 mb-6">
+        {% if query %}
+          We couldn't find any articles matching "<span class="font-semibold">{{ query }}</span>". Try searching for a different keyword or explore all categories.
+        {% else %}
+          No articles are currently available in this category.
+        {% endif %}
+      </p>
+      <a href="{% url 'blog_list' %}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition shadow-sm">
+        View All Articles
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
 </div>
 {% endblock %}
