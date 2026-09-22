@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.http import StreamingHttpResponse, JsonResponse, HttpResponseBadRequest
 import google.generativeai as genai
 
@@ -181,13 +182,104 @@ def _generate_friendly_prompt(mood, user_msg):
     return prompt_template.format(msg=user_msg)
 
 
+CHATBUDDY_SYSTEM_INSTRUCTION = (
+    "You are ChatBuddy, a compassionate, empathetic, and attentive mental health companion. "
+    "Your purpose is to provide a safe, soothing, and non-judgmental space. "
+    "Listen deeply, validate feelings with genuine empathy, and offer gentle perspectives or practical grounding techniques when helpful. "
+    "Speak like a caring, emotionally intelligent friend—not an impersonal machine or clinical textbook. "
+    "Keep replies readable, human, and comforting. Use gentle Markdown formatting (e.g. bold highlights, clear line breaks, and bullet lists when appropriate). "
+    "CRITICAL SAFETY RULE: If the user indicates self-harm, suicidal ideation, or extreme crisis, respond with heartfelt care, urge them to stay safe, and provide crisis helpline resources:\n"
+    "- India: Tele-MANAS (14416 or 1800-891-4416), Vandrevala Foundation (+91 9999 666 555)\n"
+    "- US/International: 988 Suicide & Crisis Lifeline (call/text 988), or findahelpline.com"
+)
+
+
+def _generate_fallback_response(mood, user_msg):
+    """Empathetic fallback response when remote AI is unreachable or API key suspended."""
+    m = (mood or "neutral").lower()
+    msg_lower = user_msg.lower().strip()
+
+    # Safety checks first
+    if any(k in msg_lower for k in ["suicide", "kill myself", "end my life", "self harm", "want to die"]):
+        return (
+            "I hear how much pain you are carrying right now, and I care deeply about your safety. "
+            "Please know that you do not have to carry this alone. Please reach out to someone who can help right now:\n\n"
+            "- **Tele-MANAS (India):** Call 14416 or 1800-891-4416 (24/7 free toll-free)\n"
+            "- **Vandrevala Foundation:** Call +91 9999 666 555\n"
+            "- **US/Canada Lifeline:** Call or text 988\n\n"
+            "Please reach out to them. There are people who want to listen and walk with you through this."
+        )
+
+    # Contextual matches
+    if any(k in msg_lower for k in ["hello", "hi", "hey", "hola"]):
+        return (
+            "Hello! It's so good to hear from you. I'm right here with you in this safe space. "
+            "How is your heart and mind feeling today?"
+        )
+
+    if any(k in msg_lower for k in ["exhaust", "tired", "long day", "hard day", "drained"]):
+        return (
+            "I hear you. Long and exhausting days take a real toll on both your mind and body. "
+            "Right now, please give yourself permission to set that heavy backpack down. "
+            "You made it through today, and that is more than enough.\n\n"
+            "Would you like to talk about what made today so draining, or would you prefer a quick soothing reset?"
+        )
+
+    if any(k in msg_lower for k in ["breathe", "breathing", "anxiety", "anxious", "panic", "overwhelm"]):
+        return (
+            "I hear that things feel overwhelming right now. Let's take a calm pause together 🌿\n\n"
+            "1. **Breathe in** gently through your nose for 4 seconds.\n"
+            "2. **Hold** that stillness for 4 seconds.\n"
+            "3. **Exhale slowly** through your mouth for 6 seconds.\n\n"
+            "Relax your shoulders and unclench your jaw. You are safe right now in this moment. How does that feel?"
+        )
+
+    if any(k in msg_lower for k in ["vent", "just listen", "rant"]):
+        return (
+            "I am completely here to listen—no unwanted advice, no judgment, just an open ear. "
+            "Whenever you're ready, let it all out."
+        )
+
+    mood_replies = {
+        "sadness": (
+            "I can hear how heavy things feel right now, and I want you to know it's completely okay to feel this way. "
+            "You don't have to carry this burden alone. What's sitting most heavily on your mind right now?"
+        ),
+        "anger": (
+            "It sounds like you're dealing with something intensely frustrating. Your feelings are valid, and you have every right to feel upset. "
+            "I'm here to listen without judgment—feel free to vent as much as you need."
+        ),
+        "fear": (
+            "It's understandable to feel nervous or afraid when things feel uncertain. In this moment, take a slow breath. You are safe here. "
+            "What feels like the biggest worry right now?"
+        ),
+        "joy": (
+            "That is so wonderful to hear! Celebrating the bright moments is so important. What was the best part of it for you?"
+        ),
+        "optimism": (
+            "I love that forward-looking hope! Holding onto positive momentum is so powerful. Tell me more about it!"
+        ),
+        "gratitude": (
+            "Gratitude has such a grounding warmth to it. Holding onto those small moments of grace makes a big difference."
+        ),
+        "nervousness": (
+            "It's completely natural to feel nervous. Be gentle with yourself right now. Let's take it one step at a time."
+        ),
+        "neutral": (
+            "Thank you for sharing that with me. I'm listening closely. Tell me more about what you're thinking about."
+        ),
+    }
+
+    return mood_replies.get(m, "I'm listening and I'm here with you. Please take your time—tell me whatever is on your mind.")
+
+
 @login_required
 def chatbot_response(request):
-    """Handle chat messages — streams Gemini response with mood-awareness."""
+    """Handle chat messages — streams Gemini response with conversation memory and mood-awareness."""
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            user_message = data.get("message", "")
+            user_message = data.get("message", "").strip()
 
             if not user_message:
                 return JsonResponse({"response": "No message received!"}, status=400)
@@ -198,38 +290,99 @@ def chatbot_response(request):
             mood, confidence = detect_mood(user_message)
             logger.info("Detected mood: %s (%.2f) for user=%s", mood, confidence, request.user.username)
 
+            # Fetch recent conversation context (last 6 messages)
+            recent_chats = ChatMessage.objects.filter(sender=request.user).order_by('-timestamp')[:6]
+            history_lines = []
+            for c in reversed(recent_chats):
+                if c.message:
+                    history_lines.append(f"User: {c.message}")
+                if c.response:
+                    snippet = c.response[:250] + ("..." if len(c.response) > 250 else "")
+                    history_lines.append(f"ChatBuddy: {snippet}")
+
+            history_str = "\n".join(history_lines) if history_lines else "No prior history in this session."
+
             # Build the mood-aware prompt
-            friendly_prompt = _generate_friendly_prompt(mood, user_message)
+            mood_guidance = _generate_friendly_prompt(mood, user_message)
 
-            # Gemini Streaming Response
-            model = genai.GenerativeModel("gemini-1.5-pro-latest")
-            response_stream = model.generate_content(friendly_prompt, stream=True)
+            full_prompt = (
+                f"{CHATBUDDY_SYSTEM_INSTRUCTION}\n\n"
+                f"### Recent Conversation Context:\n{history_str}\n\n"
+                f"### Detected User Emotion:\nMood: {mood} (Confidence: {confidence:.2f})\n"
+                f"Empathy Guidance: {mood_guidance}\n\n"
+                f"### User's Current Message:\n{user_message}\n\n"
+                f"Respond warmly and directly to the user as ChatBuddy:"
+            )
 
-            # To store streamed response
-            bot_response_chunks = []
+            # Try Gemini API, with graceful fallback if suspended/offline
+            try:
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                response_stream = model.generate_content(full_prompt, stream=True)
 
-            def event_stream():
-                for chunk in response_stream:
-                    if hasattr(chunk, "text"):
-                        bot_response_chunks.append(chunk.text)
-                        yield f"{chunk.text}"
+                bot_response_chunks = []
 
-                # Save chat with mood after full stream
+                def event_stream():
+                    for chunk in response_stream:
+                        if hasattr(chunk, "text") and chunk.text:
+                            bot_response_chunks.append(chunk.text)
+                            yield chunk.text
+
+                    final_response = "".join(bot_response_chunks).strip()
+                    if final_response:
+                        ChatMessage.objects.create(
+                            sender=request.user,
+                            message=user_message,
+                            response=final_response,
+                            mood=mood,
+                            mood_confidence=confidence
+                        )
+
+                response = StreamingHttpResponse(event_stream(), content_type="text/plain; charset=utf-8")
+                response["X-Detected-Mood"] = mood
+                response["X-Mood-Confidence"] = str(round(confidence, 2))
+                return response
+
+            except Exception as gemini_err:
+                logger.warning("Gemini model unavailable (%s). Serving intelligent empathetic fallback.", str(gemini_err))
+                fallback_reply = _generate_fallback_response(mood, user_message)
+
+                # Save fallback to history so chat history continues seamlessly
                 ChatMessage.objects.create(
                     sender=request.user,
                     message=user_message,
-                    response="".join(bot_response_chunks),
+                    response=fallback_reply,
                     mood=mood,
                     mood_confidence=confidence
                 )
 
-            return StreamingHttpResponse(event_stream(), content_type="text/plain")
+                def fallback_stream():
+                    words = fallback_reply.split(" ")
+                    for i, w in enumerate(words):
+                        yield w + (" " if i < len(words) - 1 else "")
+
+                response = StreamingHttpResponse(fallback_stream(), content_type="text/plain; charset=utf-8")
+                response["X-Detected-Mood"] = mood
+                response["X-Mood-Confidence"] = str(round(confidence, 2))
+                return response
 
         except Exception as e:
-            logger.error("Chatbot error: %s", str(e))
-            return JsonResponse({"response": f"Error: {str(e)}"}, status=500)
+            logger.error("Chatbot fatal error: %s", str(e))
+            return JsonResponse({"response": "I'm right here with you. Please take a deep breath and tell me a bit more."}, status=200)
 
     return JsonResponse({"error": "Method not allowed"}, status=405)
+
+
+@login_required
+@require_POST
+def clear_chat_history(request):
+    """Clear all chat messages for the current user."""
+    try:
+        deleted_count, _ = ChatMessage.objects.filter(sender=request.user).delete()
+        logger.info("Cleared %d chat messages for user=%s", deleted_count, request.user.username)
+        return JsonResponse({"status": "success", "message": "Conversation history cleared successfully."})
+    except Exception as e:
+        logger.error("Failed to clear chat history: %s", str(e))
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
 
 # ──────────────────────────────────────────────

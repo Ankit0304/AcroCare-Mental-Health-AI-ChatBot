@@ -10,6 +10,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('chat/', views.chat_page, name='chat'),
     path('chatbot/', views.chatbot_response, name='chatbot_response'),
+    path('chat/clear/', views.clear_chat_history, name='clear_chat_history'),
     path('profile/', views.profile, name='profile'),
     path("journal/", views.journal_page, name="journal_page"),
     path('therapy/', views.therapy_view, name='therapy'),

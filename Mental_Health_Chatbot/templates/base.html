@@ -76,61 +76,61 @@
 
   <!-- Navbar -->
   {% if request.resolver_match.url_name != "login" and request.resolver_match.url_name != "signup" and request.resolver_match.url_name != "password_reset" and request.resolver_match.url_name != "password_reset_done" and request.resolver_match.url_name != "password_reset_confirm" and request.resolver_match.url_name != "password_reset_complete" %}
-  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14 sm:h-16">
       
       <!-- Brand -->
-      <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}" class="flex items-center gap-3 group">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition transform">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'home' %}{% endif %}" class="flex items-center gap-2.5 group">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20 group-hover:scale-105 transition transform">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
         </div>
         <div class="flex flex-col">
-          <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">ACROCARE</span>
-          <span class="text-[11px] text-slate-400 font-bold tracking-wider -mt-0.5">AI COMPANION</span>
+          <span class="text-base sm:text-lg font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent leading-none">ACROCARE</span>
+          <span class="text-[9px] text-slate-400 font-bold tracking-wider mt-0.5">AI COMPANION</span>
         </div>
       </a>
 
       <!-- Desktop Nav Links -->
-      <nav class="hidden md:flex items-center gap-2 text-base font-medium text-slate-600">
+      <nav class="hidden md:flex items-center gap-1.5 text-sm font-medium text-slate-600">
         {% if user.is_authenticated and request.resolver_match.url_name != 'dashboard' %}
-          <a href="{% url 'dashboard' %}" class="px-3.5 py-2.5 rounded-xl text-blue-600 bg-blue-50/80 hover:bg-blue-100/80 font-semibold transition flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          <a href="{% url 'dashboard' %}" class="px-3 py-1.5 rounded-xl text-blue-600 bg-blue-50/80 hover:bg-blue-100/80 font-semibold transition flex items-center gap-1.5 text-xs sm:text-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             <span>Dashboard</span>
           </a>
         {% endif %}
 
-        <a href="{% url 'chat' %}" class="px-3.5 py-2.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-2 {% if request.resolver_match.url_name == 'chat' %}text-blue-600 bg-blue-50 font-semibold{% endif %}">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+        <a href="{% url 'chat' %}" class="px-3 py-1.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-1.5 text-xs sm:text-sm {% if request.resolver_match.url_name == 'chat' %}text-blue-600 bg-blue-50 font-semibold{% endif %}">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
           <span>Chat Buddy</span>
         </a>
-        <a href="{% url 'therapy' %}" class="px-3.5 py-2.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-2 {% if request.resolver_match.url_name == 'therapy' %}text-blue-600 bg-blue-50 font-semibold{% endif %}">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        <a href="{% url 'therapy' %}" class="px-3 py-1.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-1.5 text-xs sm:text-sm {% if request.resolver_match.url_name == 'therapy' %}text-blue-600 bg-blue-50 font-semibold{% endif %}">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
           <span>Self-Care</span>
         </a>
-        <a href="{% url 'journal_page' %}" class="px-3.5 py-2.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-2 {% if request.resolver_match.url_name == 'journal_page' %}text-blue-600 bg-blue-50 font-semibold{% endif %}">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        <a href="{% url 'journal_page' %}" class="px-3 py-1.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-1.5 text-xs sm:text-sm {% if request.resolver_match.url_name == 'journal_page' %}text-blue-600 bg-blue-50 font-semibold{% endif %}">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
           <span>Journal</span>
         </a>
-        <a href="/blogs/" class="px-3.5 py-2.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+        <a href="/blogs/" class="px-3 py-1.5 rounded-xl hover:text-blue-600 hover:bg-blue-50/60 transition flex items-center gap-1.5 text-xs sm:text-sm">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
           <span>Blogs</span>
         </a>
       </nav>
 
       <!-- Right Menu (Auth / User) -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
         {% if user.is_authenticated %}
         <div class="relative">
-          <button id="userMenuButton" class="flex items-center gap-2.5 p-2 rounded-2xl hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500/20" aria-label="User menu">
+          <button id="userMenuButton" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500/20" aria-label="User menu">
             {% if user.profile.profile_picture %}
-              <img src="{{ user.profile.profile_picture.url }}" alt="Avatar" class="w-9 h-9 rounded-full object-cover ring-2 ring-blue-500/30" />
+              <img src="{{ user.profile.profile_picture.url }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/30" />
             {% else %}
-              <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                 {{ user.username|first|upper }}
               </div>
             {% endif %}
-            <span class="hidden sm:inline text-sm font-semibold text-slate-700 max-w-[120px] truncate">{{ user.username }}</span>
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            <span class="hidden sm:inline text-xs font-semibold text-slate-700 max-w-[120px] truncate">{{ user.username }}</span>
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
           </button>
 
           <!-- Dropdown -->
@@ -188,7 +188,8 @@
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
+  <!-- Footer (Hidden on Chat Page for Full-Screen App Experience) -->
+  {% if request.resolver_match.url_name != 'chat' %}
   <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 text-sm mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -238,6 +239,7 @@
       </div>
     </div>
   </footer>
+  {% endif %}
 
   <script>
     const userMenuBtn = document.getElementById('userMenuButton');
