@@ -122,8 +122,8 @@
         {% if user.is_authenticated %}
         <div class="relative">
           <button id="userMenuButton" class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500/20" aria-label="User menu">
-            {% if user.profile.profile_picture %}
-              <img src="{{ user.profile.profile_picture.url }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/30" />
+            {% if user.profile.profile_picture and user.profile.profile_picture.name != 'default.jpg' %}
+              <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="w-8 h-8 rounded-full object-cover ring-2 ring-blue-500/30" onerror="this.onerror=null; this.src='{% static 'images/account.png' %}';" />
             {% else %}
               <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                 {{ user.username|first|upper }}

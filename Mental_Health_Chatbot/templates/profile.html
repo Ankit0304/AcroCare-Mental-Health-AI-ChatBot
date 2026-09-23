@@ -20,8 +20,9 @@
       <div class="relative group">
         <div class="w-32 h-32 rounded-full overflow-hidden ring-4 ring-blue-500/20 shadow-md bg-slate-100 flex items-center justify-center">
           <img id="avatarPreview"
-               src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% else %}{% static 'images/account.png' %}{% endif %}"
+               src="{% if user.profile.profile_picture and user.profile.profile_picture.name != 'default.jpg' %}{{ user.profile.profile_picture.url }}{% else %}{% static 'images/account.png' %}{% endif %}"
                alt="Profile Picture"
+               onerror="this.onerror=null; this.src='{% static 'images/account.png' %}';"
                class="w-full h-full object-cover">
         </div>
       </div>
