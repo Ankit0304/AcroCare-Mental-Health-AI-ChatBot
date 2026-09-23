@@ -1,1 +1,1 @@
-web: gunicorn mental_health_chatbot.wsgi:application
+web: gunicorn mental_health_chatbot.wsgi:application --workers 2 --threads 2 --timeout 120
