@@ -195,7 +195,7 @@ CHATBUDDY_SYSTEM_INSTRUCTION = (
 
 
 def _generate_fallback_response(mood, user_msg):
-    """Empathetic fallback response when remote AI is unreachable or API key suspended."""
+    """Empathetic and conversational fallback response when remote AI is unreachable or API key suspended."""
     m = (mood or "neutral").lower()
     msg_lower = user_msg.lower().strip()
 
@@ -210,14 +210,54 @@ def _generate_fallback_response(mood, user_msg):
             "Please reach out to them. There are people who want to listen and walk with you through this."
         )
 
-    # Contextual matches
-    if any(k in msg_lower for k in ["hello", "hi", "hey", "hola"]):
+    # Identity and self-introduction
+    if any(k in msg_lower for k in ["who are you", "what are you", "who r u", "your name", "tell me about yourself"]):
         return (
-            "Hello! It's so good to hear from you. I'm right here with you in this safe space. "
-            "How is your heart and mind feeling today?"
+            "I'm **ChatBuddy**, your AI mental health and emotional wellness companion on AcroCare. 🌸\n\n"
+            "I'm here to offer a safe, confidential space where you can share your thoughts, talk through stress, "
+            "and practice calming exercises without any judgment. How are you feeling today?"
         )
 
-    if any(k in msg_lower for k in ["exhaust", "tired", "long day", "hard day", "drained"]):
+    # Capabilities and help
+    if any(k in msg_lower for k in ["what can you do", "how can you help", "what do you do", "features"]):
+        return (
+            "Here are some ways I can support you:\n\n"
+            "- 💬 **Listening & Venting:** Talk openly about your day, stress, work, or relationships.\n"
+            "- 🌿 **Calming Breathing:** Guide you through relaxation and grounding techniques.\n"
+            "- 📝 **Journal Reflection:** Help unpack and understand what's on your mind.\n"
+            "- 🛡️ **Crisis Helplines:** Connect you with professional resources whenever needed.\n\n"
+            "What would feel most helpful for you right now?"
+        )
+
+    # Greeting / check-in
+    if any(k in msg_lower for k in ["hello", "hi", "hey", "hola", "namaste", "good morning", "good evening", "good afternoon"]):
+        return (
+            "Hello! It's really wonderful to connect with you. I'm right here with you in this quiet space. "
+            "How has your day been treating you so far?"
+        )
+
+    # Inquiries about bot's status
+    if any(k in msg_lower for k in ["how are you", "how r u", "how are you doing", "how's it going"]):
+        return (
+            "Thank you so much for asking! I'm doing well, and I'm glad you're here. "
+            "More importantly, how are you feeling inside today?"
+        )
+
+    # Creator inquiries
+    if any(k in msg_lower for k in ["who created you", "who made you", "who developed you"]):
+        return (
+            "I was created as part of the **AcroCare** mental wellness platform to provide accessible, "
+            "empathetic emotional support for anyone seeking a safe place to share."
+        )
+
+    # Gratitude
+    if any(k in msg_lower for k in ["thank you", "thanks", "thx", "appreciate it"]):
+        return (
+            "You are so very welcome! It means a lot to share this space with you. "
+            "Remember to take things one step at a time today."
+        )
+
+    if any(k in msg_lower for k in ["exhaust", "tired", "long day", "hard day", "drained", "sleepy"]):
         return (
             "I hear you. Long and exhausting days take a real toll on both your mind and body. "
             "Right now, please give yourself permission to set that heavy backpack down. "
@@ -266,7 +306,7 @@ def _generate_fallback_response(mood, user_msg):
             "It's completely natural to feel nervous. Be gentle with yourself right now. Let's take it one step at a time."
         ),
         "neutral": (
-            "Thank you for sharing that with me. I'm listening closely. Tell me more about what you're thinking about."
+            "I'm listening closely. Please take your time—tell me whatever is on your mind."
         ),
     }
 
@@ -314,11 +354,27 @@ def chatbot_response(request):
                 f"Respond warmly and directly to the user as ChatBuddy:"
             )
 
-            # Try Gemini API, with graceful fallback if suspended/offline
-            try:
-                model = genai.GenerativeModel("gemini-1.5-flash")
-                response_stream = model.generate_content(full_prompt, stream=True)
+            # Dynamically read and configure Gemini API key
+            api_key = (os.getenv("GEMINI_API_KEY") or "").strip()
+            response_stream = None
+            gemini_error = None
 
+            if api_key:
+                genai.configure(api_key=api_key)
+                candidate_models = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-pro"]
+                for model_name in candidate_models:
+                    try:
+                        gemini_model = genai.GenerativeModel(model_name)
+                        response_stream = gemini_model.generate_content(full_prompt, stream=True)
+                        logger.info("Successfully generated response using model=%s", model_name)
+                        break
+                    except Exception as err:
+                        gemini_error = str(err)
+                        logger.warning("Gemini model %s failed: %s", model_name, gemini_error)
+            else:
+                logger.warning("GEMINI_API_KEY is not configured in environment.")
+
+            if response_stream is not None:
                 bot_response_chunks = []
 
                 def event_stream():
@@ -341,12 +397,11 @@ def chatbot_response(request):
                 response["X-Detected-Mood"] = mood
                 response["X-Mood-Confidence"] = str(round(confidence, 2))
                 return response
-
-            except Exception as gemini_err:
-                logger.warning("Gemini model unavailable (%s). Serving intelligent empathetic fallback.", str(gemini_err))
+            else:
+                # Fallback empathetic response
+                logger.warning("Falling back to conversational fallback. Last Gemini error: %s", gemini_error)
                 fallback_reply = _generate_fallback_response(mood, user_message)
 
-                # Save fallback to history so chat history continues seamlessly
                 ChatMessage.objects.create(
                     sender=request.user,
                     message=user_message,

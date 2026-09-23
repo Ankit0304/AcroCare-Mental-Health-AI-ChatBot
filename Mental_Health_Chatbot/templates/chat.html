@@ -581,31 +581,68 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target === crisisModal) crisisModal.classList.add("hidden");
   });
 
-  // Speech Recognition
+  // Speech Recognition (Continuous dictation, manual send)
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
     let isListening = false;
+    let initialPrefix = "";
 
     recognition.onstart = function() {
       isListening = true;
+      initialPrefix = chatInput.value ? chatInput.value.trim() + " " : "";
       micPulse.classList.remove("hidden");
       micBtn.classList.add("bg-rose-50", "text-rose-600", "border-rose-200");
+      micBtn.setAttribute("title", "Listening... Click mic to stop");
     };
 
     recognition.onresult = function(event) {
-      chatInput.value = event.results[0][0].transcript;
+      let finalTranscript = "";
+      let interimTranscript = "";
+
+      for (let i = 0; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript + " ";
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+
+      chatInput.value = initialPrefix + finalTranscript + interimTranscript;
+      chatInput.focus();
     };
 
     recognition.onend = function() {
       isListening = false;
       micPulse.classList.add("hidden");
       micBtn.classList.remove("bg-rose-50", "text-rose-600", "border-rose-200");
+      micBtn.setAttribute("title", "Voice Input");
+      chatInput.focus();
+    };
+
+    recognition.onerror = function(event) {
+      console.warn("Speech recognition notice:", event.error);
+      if (event.error !== 'no-speech') {
+        isListening = false;
+        micPulse.classList.add("hidden");
+        micBtn.classList.remove("bg-rose-50", "text-rose-600", "border-rose-200");
+      }
     };
 
     micBtn.addEventListener('click', function() {
-      if (isListening) recognition.stop();
-      else recognition.start();
+      if (isListening) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch (e) {
+          console.warn("Speech recognition restart:", e);
+        }
+      }
     });
   } else {
     micBtn.style.display = 'none';
